@@ -32,7 +32,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: 'arn:aws:dynamodb:us-east-1:528865312407:table/Game'
+      Resource: 'arn:aws:dynamodb:us-east-1:528865312407:table/Games'
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -126,5 +126,5 @@ functions:
     timeout: 10
     events:
       - http:
-        path: game
-        method: post
+          path: game
+          method: post
