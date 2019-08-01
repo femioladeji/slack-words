@@ -1,55 +1,96 @@
-// const axios = require('axios');
+const axios = require('axios');
+const aws = require('aws-sdk');
 const qs = require('qs');
 const db = require('./utils/db');
+const app = require('./utils/app');
+
+const lambda = new aws.Lambda({
+  region: 'us-east-1',
+});
+
+const respond = (callback, statusCode, body) => callback(null, {
+  statusCode,
+  body,
+});
 
 module.exports.start = async (event, context, callback) => {
-  // console.log(context.callbackWaitsForEmptyEventLoop);
-  // console.log(JSON.stringify(event, null, 2));
-
-  // callback(null, {
-  //   statusCode: 200,
-  //   body: JSON.stringify({
-  //     text: 'Starting game...',
-  //     response_type: 'ephemeral',
-  //   }),
-  // });
   const gameItem = qs.parse(event.body);
   try {
-    gameItem.id = `${gameItem.user_id}${Date.now()}`;
+    gameItem.id = `${gameItem.team_id}${gameItem.channel_id}`;
     gameItem.start = Date.now();
-    gameItem.letters = 'as kird nead';
+    gameItem.letters = app.generateLetters();
+    gameItem.active = true;
+    gameItem.words = [];
     delete gameItem.text;
     delete gameItem.token;
     delete gameItem.command;
-
-    await db.insert('Game', gameItem);
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        text: `Game started, type as many english words using *${gameItem.letters}*`,
+    const { Count, Items } = await db.query(gameItem.id, gameItem.channel_id);
+    if (Count > 0 && Items[0].active) {
+      return respond(callback, 200, JSON.stringify({
+        text: `There's a game in progress with \`${Items[0].letters}\``,
         response_type: 'in_channel',
-      }),
+      }));
+    }
+    await db.insert('Game', gameItem);
+    const request = lambda.invoke({
+      FunctionName: 'end_game',
+      InvocationType: 'Event',
+      Payload: JSON.stringify(gameItem),
     });
-    // axios.post(gameItem.response_url, {
-    //   text: `Game started, type as many english words using ${gameItem.letters}`,
-    //   response_type: 'in_channel',
-    // });
+    request.send();
+    return respond(callback, 200, JSON.stringify({
+      text: `Game started, type as many english words using \`${gameItem.letters}\``,
+      response_type: 'in_channel',
+    }));
   } catch (error) {
-    console.log(error);
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        text: 'Game was not started',
-        response_type: 'ephemeral',
-      }),
-    });
-    // axios.post(gameItem.response_url, {
-    //   text: 'Game was not started',
-    //   response_type: 'ephemeral',
-    // });
+    return respond(callback, 200, JSON.stringify({
+      text: 'Game was not started',
+      response_type: 'ephemeral',
+    }));
   }
+};
 
+module.exports.end = (event, context, callback) => {
+  const DELAY = 30;
+  setTimeout(async () => {
+    try {
+      await db.endGame(event.id, event.channel_id);
+      await axios.post(event.response_url, JSON.stringify({
+        text: 'Game has ended computing results...',
+        response_type: 'in_channel',
+      }));
+      callback(null, {
+        statusCode: 200,
+      });
+    } catch (error) {
+      await axios.post(event.response_url, JSON.stringify({
+        text: 'An error ocurred while ending the game',
+        response_type: 'in_channel',
+      }));
+      callback(null, {
+        statusCode: 500,
+      });
+    }
+    // axios.post()
+  }, DELAY * 1000);
+};
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+module.exports.submit = async (event, context, callback) => {
+  const { event: message } = JSON.parse(event.body);
+  if (!message.thread_ts || message.text.trim().split(' ').length > 1) {
+    return callback(null, { statusCode: 200 });
+  }
+  try {
+    const id = `${message.team}${message.channel}`;
+    await db.addWords(id, message.channel, {
+      user: message.user,
+      word: message.text,
+    });
+    return callback(null, { statusCode: 200 });
+  } catch (error) {
+    if (error.code === 'ConditionalCheckFailedException') {
+      console.log('game has ended');
+    }
+    return callback(null, { statusCode: 200 });
+  }
 };

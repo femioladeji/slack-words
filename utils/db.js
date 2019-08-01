@@ -17,4 +17,67 @@ module.exports = {
       });
     });
   },
+
+  // update(table, where, data) {
+  //   return new Promise((resolve, reject) => {
+
+  //   });
+  // },
+
+  // eslint-disable-next-line camelcase
+  endGame(id, channel_id) {
+    return new Promise((resolve, reject) => {
+      documentClient.update({
+        TableName: 'Game',
+        Key: { id, channel_id },
+        UpdateExpression: 'set active = :status',
+        ExpressionAttributeValues: {
+          ':status': false,
+        },
+      }, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    });
+  },
+
+  // eslint-disable-next-line camelcase
+  addWords(id, channel_id, word) {
+    return new Promise((resolve, reject) => {
+      documentClient.update({
+        TableName: 'Game',
+        Key: { id, channel_id },
+        ConditionExpression: 'active = :status',
+        UpdateExpression: 'set words = list_append(words, :word)',
+        ExpressionAttributeValues: {
+          ':word': [word],
+          ':status': true,
+        },
+      }, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    });
+  },
+
+  query(id) {
+    return new Promise((resolve, reject) => {
+      documentClient.query({
+        TableName: 'Game',
+        KeyConditionExpression: 'id = :id',
+        ExpressionAttributeValues: {
+          ':id': id,
+        },
+      }, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    });
+  },
 };

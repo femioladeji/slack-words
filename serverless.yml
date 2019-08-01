@@ -33,6 +33,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: 'arn:aws:dynamodb:us-east-1:528865312407:table/Game'
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: 'arn:aws:lambda:us-east-1:528865312407:function:end_game'
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -123,8 +127,21 @@ functions:
   game:
     handler: game.start
     name: start_game
-    timeout: 10
+    timeout: 5
     events:
       - http:
           path: game
+          method: post
+  end:
+    handler: game.end
+    name: end_game
+    timeout: 40
+
+  submit:
+    handler: game.submit
+    name: submit_words
+    timeout: 5
+    events:
+      - http:
+          path: submit
           method: post
