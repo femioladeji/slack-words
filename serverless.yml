@@ -32,11 +32,11 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: 'arn:aws:dynamodb:us-east-1:528865312407:table/Game'
+      Resource: ${env:DYNAMO_DB}
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
-      Resource: 'arn:aws:lambda:us-east-1:528865312407:function:end_game'
+      Resource: ${env:LAMBDA_ARN}
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1

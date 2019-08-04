@@ -18,12 +18,6 @@ module.exports = {
     });
   },
 
-  // update(table, where, data) {
-  //   return new Promise((resolve, reject) => {
-
-  //   });
-  // },
-
   // eslint-disable-next-line camelcase
   endGame(id, channel_id) {
     return new Promise((resolve, reject) => {
@@ -31,6 +25,7 @@ module.exports = {
         TableName: 'Game',
         Key: { id, channel_id },
         UpdateExpression: 'set active = :status',
+        ReturnValues: 'ALL_NEW',
         ExpressionAttributeValues: {
           ':status': false,
         },

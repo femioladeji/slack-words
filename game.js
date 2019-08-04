@@ -54,10 +54,15 @@ module.exports.end = (event, context, callback) => {
   const DELAY = 30;
   setTimeout(async () => {
     try {
-      await db.endGame(event.id, event.channel_id);
-      await axios.post(event.response_url, JSON.stringify({
+      const item = await db.endGame(event.id, event.channel_id);
+      axios.post(event.response_url, JSON.stringify({
         text: 'Game has ended computing results...',
         response_type: 'in_channel',
+      }));
+      const results = await app.computeResults(item.Attributes.words, item.Attributes.letters.split(' '));
+      axios.post(event.response_url, JSON.stringify({
+        response_type: 'in_channel',
+        blocks: results,
       }));
       callback(null, {
         statusCode: 200,
