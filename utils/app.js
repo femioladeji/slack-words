@@ -99,13 +99,11 @@ module.exports = {
       let dictionaryCheck = entries.map(({ word }) => {
         if (foundWords.includes(word)) {
           // someone has already entered the word
-          console.log('here');
           return Promise.resolve({
             status: 400,
           });
         }
         if (!this.isWordValid(word, alphabets)) {
-          console.log('invalid');
           return Promise.resolve({
             status: 400,
           });
