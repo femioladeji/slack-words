@@ -59,7 +59,8 @@ module.exports.end = (event, context, callback) => {
         text: 'Game has ended computing results...',
         response_type: 'in_channel',
       }));
-      const results = await app.computeResults(item.Attributes.words, item.Attributes.letters.split(' '));
+      const { letters, words } = item.Attributes;
+      const results = await app.computeResults(words, letters.toLowerCase().split(' '));
       axios.post(event.response_url, JSON.stringify({
         response_type: 'in_channel',
         blocks: results,
@@ -68,6 +69,7 @@ module.exports.end = (event, context, callback) => {
         statusCode: 200,
       });
     } catch (error) {
+      console.log(error);
       await axios.post(event.response_url, JSON.stringify({
         text: 'An error ocurred while ending the game',
         response_type: 'in_channel',

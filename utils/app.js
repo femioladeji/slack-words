@@ -52,19 +52,7 @@ module.exports = {
         shuffled += `${vowels[randomNumber(vowels.length)]} `;
       }
     }
-    return shuffled.trim();
-  },
-
-  validateWords(entries, alphabets) {
-    const foundWords = {};
-    const validEntries = [];
-    entries.forEach(({ word }, index) => {
-      if (!foundWords[word] && this.isWordValid(word, alphabets)) {
-        validEntries.push(entries[index]);
-        foundWords[word] = true;
-      }
-    });
-    return validEntries;
+    return shuffled.trim().toUpperCase();
   },
 
   isWordValid(word, alphabets) {
@@ -94,17 +82,35 @@ module.exports = {
     const users = {};
     scores.forEach((each) => {
       if (!users[each.user]) {
-        users[each.user] = 0;
+        users[each.user] = {
+          totalScore: 0,
+          words: '',
+        };
       }
-      users[each.user] += each.score;
+      users[each.user].totalScore += each.score;
+      users[each.user].words += `${users[each.user].words === '' ? '' : ', '}${each.word}: ${each.score}`;
     });
     return users;
   },
 
   computeResults(entries, alphabets) {
     return new Promise(async (resolve, reject) => {
-      const validCandidates = this.validateWords(entries, alphabets);
-      let dictionaryCheck = validCandidates.map(({ word }) => {
+      const foundWords = [];
+      let dictionaryCheck = entries.map(({ word }) => {
+        if (foundWords.includes(word)) {
+          // someone has already entered the word
+          console.log('here');
+          return Promise.resolve({
+            status: 400,
+          });
+        }
+        if (!this.isWordValid(word, alphabets)) {
+          console.log('invalid');
+          return Promise.resolve({
+            status: 400,
+          });
+        }
+        foundWords.push(word);
         const url = `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`;
         return axios.get(url, {
           headers: {
@@ -116,12 +122,17 @@ module.exports = {
       });
       try {
         dictionaryCheck = await Promise.all(dictionaryCheck);
-        const score = validCandidates.map((each, index) => {
+        const score = entries.map((each, index) => {
+          const { status } = dictionaryCheck[index];
           let wordValue = 0;
-          if (dictionaryCheck[index].status === 200) {
+          if (status === 200) {
             wordValue = this.rateWord(each.word);
           }
-          return { user: each.user, score: wordValue };
+          return {
+            user: each.user,
+            score: wordValue,
+            word: status === 200 ? each.word : `~${each.word}~`,
+          };
         });
         const results = await this.getUsers(this.groupByUser(score));
         resolve(results.sort(this.sortScore));
@@ -163,15 +174,15 @@ module.exports = {
             },
             {
               type: 'plain_text',
-              text: `${users[data.user.id]}`,
+              text: `${users[data.user.id].totalScore}`,
             },
             {
               type: 'plain_text',
-              text: 'Position:',
+              text: 'words:',
             },
             {
-              type: 'plain_text',
-              text: '1',
+              type: 'mrkdwn',
+              text: users[data.user.id].words,
             }],
             accessory: {
               type: 'image',
