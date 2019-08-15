@@ -3,8 +3,9 @@ const aws = require('aws-sdk');
 const qs = require('qs');
 const db = require('./utils/db');
 const app = require('./utils/app');
+require('dotenv').config();
 
-const lambda = new aws.Lambda({
+const sqs = new aws.SQS({
   region: 'us-east-1',
 });
 
@@ -32,12 +33,12 @@ module.exports.start = async (event, context, callback) => {
       }));
     }
     await db.insert('Game', gameItem);
-    const request = lambda.invoke({
-      FunctionName: 'end_game',
-      InvocationType: 'Event',
-      Payload: JSON.stringify(gameItem),
+    sqs.sendMessage({
+      QueueUrl: process.env.SQS_QUEUE_URL,
+      MessageBody: JSON.stringify(gameItem),
+    }, (err, data) => {
+      console.log(err, data);
     });
-    request.send();
     return respond(callback, 200, JSON.stringify({
       text: `Game started, type as many english words using \`${gameItem.letters}\``,
       response_type: 'in_channel',
@@ -50,36 +51,32 @@ module.exports.start = async (event, context, callback) => {
   }
 };
 
-module.exports.end = (event, context, callback) => {
-  const DELAY = 30;
-  setTimeout(async () => {
-    try {
-      const item = await db.endGame(event.id, event.channel_id);
-      axios.post(event.response_url, JSON.stringify({
-        text: 'Game has ended computing results...',
-        response_type: 'in_channel',
-      }));
-      const { letters, words } = item.Attributes;
-      const results = await app.computeResults(words, letters.toLowerCase().split(' '));
-      axios.post(event.response_url, JSON.stringify({
-        response_type: 'in_channel',
-        blocks: results,
-      }));
-      callback(null, {
-        statusCode: 200,
-      });
-    } catch (error) {
-      console.log(error);
-      await axios.post(event.response_url, JSON.stringify({
-        text: 'An error ocurred while ending the game',
-        response_type: 'in_channel',
-      }));
-      callback(null, {
-        statusCode: 500,
-      });
-    }
-    // axios.post()
-  }, DELAY * 1000);
+module.exports.end = async (eventMessage, context, callback) => {
+  const event = JSON.parse(eventMessage.Records[0].body);
+  try {
+    const item = await db.endGame(event.id, event.channel_id);
+    axios.post(event.response_url, JSON.stringify({
+      text: 'Game has ended computing results...',
+      response_type: 'in_channel',
+    }));
+    const { letters, words } = item.Attributes;
+    const results = await app.computeResults(words, letters.toLowerCase().split(' '));
+    axios.post(event.response_url, JSON.stringify({
+      response_type: 'in_channel',
+      blocks: results,
+    }));
+    callback(null, {
+      statusCode: 200,
+    });
+  } catch (error) {
+    await axios.post(event.response_url, JSON.stringify({
+      text: 'An error ocurred while ending the game',
+      response_type: 'in_channel',
+    }));
+    callback(null, {
+      statusCode: 500,
+    });
+  }
 };
 
 module.exports.submit = async (event, context, callback) => {

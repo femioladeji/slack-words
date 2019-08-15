@@ -37,6 +37,13 @@ provider:
       Action:
         - lambda:InvokeFunction
       Resource: ${env:LAMBDA_ARN}
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource: ${env:SQS_QUEUE_ARN}
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -135,7 +142,9 @@ functions:
   end:
     handler: game.end
     name: end_game
-    timeout: 40
+    timeout: 5
+    events:
+      - sqs: arn:aws:sqs:us-east-1:528865312407:end-game
 
   submit:
     handler: game.submit
