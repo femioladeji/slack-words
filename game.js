@@ -14,6 +14,18 @@ const respond = (callback, statusCode, body) => callback(null, {
   body,
 });
 
+const sendEndMessage = (url, thread) => {
+  let payload = {
+    text: 'Game has ended computing results...',
+  };
+  if (thread) {
+    payload.thread_ts = thread;
+  } else {
+    payload = JSON.stringify({ ...payload, response_type: 'in_channel' });
+  }
+  axios.post(url, payload);
+};
+
 module.exports.start = async (event, context, callback) => {
   const gameItem = qs.parse(event.body);
   try {
@@ -22,6 +34,7 @@ module.exports.start = async (event, context, callback) => {
     gameItem.letters = app.generateLetters();
     gameItem.active = true;
     gameItem.words = [];
+    gameItem.thread = ' ';
     delete gameItem.text;
     delete gameItem.token;
     delete gameItem.command;
@@ -40,7 +53,7 @@ module.exports.start = async (event, context, callback) => {
       console.log(err, data);
     });
     return respond(callback, 200, JSON.stringify({
-      text: `Game started, type as many english words using \`${gameItem.letters}\``,
+      text: `Game started, type as many english words within 60 seconds using \`${gameItem.letters}\``,
       response_type: 'in_channel',
     }));
   } catch (error) {
@@ -55,11 +68,12 @@ module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
   try {
     const item = await db.endGame(event.id, event.channel_id);
-    axios.post(event.response_url, JSON.stringify({
-      text: 'Game has ended computing results...',
-      response_type: 'in_channel',
-    }));
-    const { letters, words } = item.Attributes;
+    const { letters, words, thread } = item.Attributes;
+    sendEndMessage(event.response_url);
+    if (thread && thread.trim()) {
+      sendEndMessage('https://hooks.slack.com/services/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', thread);
+    }
+
     const results = await app.computeResults(words, letters.toLowerCase().split(' '));
     axios.post(event.response_url, JSON.stringify({
       response_type: 'in_channel',
@@ -86,7 +100,7 @@ module.exports.submit = async (event, context, callback) => {
   }
   try {
     const id = `${message.team}${message.channel}`;
-    await db.addWords(id, message.channel, {
+    await db.addWords(id, message.channel, message.thread_ts, {
       user: message.user,
       word: message.text,
     });

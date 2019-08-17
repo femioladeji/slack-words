@@ -39,16 +39,17 @@ module.exports = {
   },
 
   // eslint-disable-next-line camelcase
-  addWords(id, channel_id, word) {
+  addWords(id, channel_id, thread, word) {
     return new Promise((resolve, reject) => {
       documentClient.update({
         TableName: 'Game',
         Key: { id, channel_id },
         ConditionExpression: 'active = :status',
-        UpdateExpression: 'set words = list_append(words, :word)',
+        UpdateExpression: 'set words = list_append(words, :word), thread = :thread',
         ExpressionAttributeValues: {
           ':word': [word],
           ':status': true,
+          ':thread': thread,
         },
       }, (err, data) => {
         if (err) {
