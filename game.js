@@ -38,14 +38,14 @@ module.exports.start = async (event, context, callback) => {
     delete gameItem.text;
     delete gameItem.token;
     delete gameItem.command;
-    const { Count, Items } = await db.query(gameItem.id, gameItem.channel_id);
+    const { Count, Items } = await db.query(process.env.DYNAMO_TABLE_NAME, gameItem.id);
     if (Count > 0 && Items[0].active) {
       return respond(callback, 200, JSON.stringify({
         text: `There's a game in progress with \`${Items[0].letters}\``,
         response_type: 'in_channel',
       }));
     }
-    await db.insert('Game', gameItem);
+    await db.insert(process.env.DYNAMO_TABLE_NAME, gameItem);
     sqs.sendMessage({
       QueueUrl: process.env.SQS_QUEUE_URL,
       MessageBody: JSON.stringify(gameItem),

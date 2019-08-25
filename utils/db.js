@@ -1,13 +1,14 @@
 const AWS = require('aws-sdk');
+require('dotenv').config();
 
 AWS.config.update({ region: 'us-east-1' });
 const documentClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
 module.exports = {
-  insert(table, data) {
+  insert(tableName, data) {
     return new Promise((resolve, reject) => {
       documentClient.put({
-        TableName: table,
+        TableName: tableName,
         Item: data,
       }, (error) => {
         if (error) {
@@ -22,7 +23,7 @@ module.exports = {
   endGame(id, channel_id) {
     return new Promise((resolve, reject) => {
       documentClient.update({
-        TableName: 'Game',
+        TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id, channel_id },
         UpdateExpression: 'set active = :status',
         ReturnValues: 'ALL_NEW',
@@ -42,7 +43,7 @@ module.exports = {
   addWords(id, channel_id, thread, word) {
     return new Promise((resolve, reject) => {
       documentClient.update({
-        TableName: 'Game',
+        TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id, channel_id },
         ConditionExpression: 'active = :status',
         UpdateExpression: 'set words = list_append(words, :word), thread = :thread',
@@ -60,10 +61,10 @@ module.exports = {
     });
   },
 
-  query(id) {
+  query(tableName, id) {
     return new Promise((resolve, reject) => {
       documentClient.query({
-        TableName: 'Game',
+        TableName: tableName,
         KeyConditionExpression: 'id = :id',
         ExpressionAttributeValues: {
           ':id': id,

@@ -29,7 +29,7 @@ jobs:
       - image: circleci/node:9.0.0
     working_directory: ~/repo
     steps:
-      - run: cd repo && npx serverless deploy --stage production
+      - run: cd repo && npx serverless deploy --stage dev
 
 workflows:
   version: 2
@@ -41,4 +41,4 @@ workflows:
             - build
           filters:
             branches:
-              only: master
+              only: staging
