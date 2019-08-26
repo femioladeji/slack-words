@@ -1,49 +1,86 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
-service: slack-words # NOTE: update this with your service name
-#app: your-app-name
-#tenant: your-tenant-name
+org: femioladeji
+app: slack-words
+service: slack-words 
+plugins:
+  - serverless-dotenv-plugin
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
 
+resources:
+  Resources:
+    slackAuth:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:SLACK_AUTH_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    gamesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:DYNAMO_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    gameQueue:
+      Type: AWS::SQS::Queue
+      Properties: 
+        QueueName: ${env:SQS_QUEUE_NAME}
+        DelaySeconds: 60
+        MessageRetentionPeriod: 120
+
 provider:
   name: aws
   runtime: nodejs10.x
-  # iamRoleStatements: # permissions for all of your functions can be set here
-  #   - Effect: Allow
-  #     Action: # Gives permission to DynamoDB tables in a specific region
-  #       - dynamodb:DescribeTable
-  #       - dynamodb:Query
-  #       - dynamodb:Scan
-  #       - dynamodb:GetItem
-  #       - dynamodb:PutItem
-  #       - dynamodb:UpdateItem
-  #       - dynamodb:DeleteItem
-  #     Resource: ${env:DYNAMO_DB}
-  #   - Effect: Allow
-  #     Action:
-  #       - lambda:InvokeFunction
-  #     Resource: ${env:LAMBDA_ARN}
-  #   - Effect: Allow
-  #     Action:
-  #       - sqs:SendMessage
-  #       - sqs:ReceiveMessage
-  #       - sqs:DeleteMessage
-  #       - sqs:GetQueueAttributes
-  #     Resource: ${env:SQS_QUEUE_ARN}
+  versionFunctions: false
+  iamRoleStatements: # permissions for all of your functions can be set here
+    - Effect: Allow
+      Action: # Gives permission to DynamoDB tables in a specific region
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: ${env:DYNAMO_DB}
+    - Effect: Allow
+      Action: # Gives permission to DynamoDB tables in a specific region
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: ${env:SLACK_AUTH_DYNAMO_DB}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: ${env:LAMBDA_ARN}
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+      Resource: ${env:SQS_QUEUE_ARN}
 
 functions:
   game:
@@ -59,7 +96,7 @@ functions:
     name: end_game
     timeout: 5
     events:
-      - sqs: arn:aws:sqs:us-east-1:528865312407:end-game
+      - sqs: ${env:SQS_QUEUE_ARN}
 
   submit:
     handler: game.submit
@@ -70,24 +107,12 @@ functions:
           path: submit
           method: post
 
-resources:
-  Resources:
-    gamesTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: games
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    gameQueue:
-      Type: AWS::SQS::Queue
-      Properties: 
-        DelaySeconds: 60
-        MessageRetentionPeriod: 120
+  slack-auth:
+    handler: slack.auth
+    name: slack-auth
+    timeout: 10
+    events:
+      - http:
+          path: slack-auth
+          method: post
+          cors: true

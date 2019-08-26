@@ -8,8 +8,6 @@ const min = 10;
 const max = 15;
 const host = 'wordsapiv1.p.rapidapi.com';
 const key = process.env.DICTIONARY_API_KEY;
-const slackToken = process.env.SLACK_TOKEN;
-const slackUrl = `https://slack.com/api/users.info?token=${slackToken}&user=`;
 const letterValues = {
   a: 1,
   b: 3,
@@ -93,7 +91,7 @@ module.exports = {
     return users;
   },
 
-  computeResults(entries, alphabets) {
+  computeResults(entries, alphabets, token) {
     return new Promise(async (resolve, reject) => {
       const foundWords = [];
       let dictionaryCheck = entries.map(({ word }) => {
@@ -132,7 +130,7 @@ module.exports = {
             word: status === 200 ? each.word : `~${each.word}~`,
           };
         });
-        const results = await this.getUsers(this.groupByUser(score));
+        const results = await this.getUsers(this.groupByUser(score),token);
         resolve(results.sort(this.sortScore));
       } catch (error) {
         reject(error);
@@ -140,8 +138,9 @@ module.exports = {
     });
   },
 
-  getUsers(users) {
+  getUsers(users, token) {
     return new Promise(async (resolve) => {
+      const slackUrl = `https://slack.com/api/users.info?token=${token}&user=`;
       const detailsRequest = Object.keys(users).map(each => axios.get(`${slackUrl}${each}`));
       let finalScore = await Promise.all(detailsRequest);
       finalScore = finalScore.map(({ data, status }) => {
