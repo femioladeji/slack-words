@@ -5,6 +5,7 @@
   "description": "A slack game that allows you to form english words from random letters",
   "scripts": {
     "build": "npx serverless deploy --stage dev",
+    "production": "npx serverless deploy --stage production",
     "test": "echo 0"
   },
   "dependencies": {

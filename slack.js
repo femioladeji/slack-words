@@ -22,7 +22,9 @@ module.exports.auth = async (event, context, callback) => {
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
-    body: 'ok',
+    body: JSON.stringify({
+      text: 'ok',
+    }),
   };
   callback(null, response);
 };

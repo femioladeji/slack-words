@@ -20,11 +20,11 @@ module.exports = {
   },
 
   // eslint-disable-next-line camelcase
-  endGame(id, channel_id) {
+  endGame(id) {
     return new Promise((resolve, reject) => {
       documentClient.update({
         TableName: process.env.DYNAMO_TABLE_NAME,
-        Key: { id, channel_id },
+        Key: { id },
         UpdateExpression: 'set active = :status',
         ReturnValues: 'ALL_NEW',
         ExpressionAttributeValues: {
@@ -40,11 +40,11 @@ module.exports = {
   },
 
   // eslint-disable-next-line camelcase
-  addWords(id, channel_id, thread, word) {
+  addWords(id, thread, word) {
     return new Promise((resolve, reject) => {
       documentClient.update({
         TableName: process.env.DYNAMO_TABLE_NAME,
-        Key: { id, channel_id },
+        Key: { id },
         ConditionExpression: 'active = :status',
         UpdateExpression: 'set words = list_append(words, :word), thread = :thread',
         ExpressionAttributeValues: {

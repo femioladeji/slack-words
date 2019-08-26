@@ -24,5 +24,6 @@ jobs:
 
       - run: yarn test
 
-      - deploy:
+      - run:
+          name: Deploy application
           command: yarn build
