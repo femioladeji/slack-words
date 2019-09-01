@@ -1,4 +1,3 @@
-require('dotenv').config();
 const axios = require('axios');
 
 const vowels = ['a', 'e', 'i', 'o', 'u'];
