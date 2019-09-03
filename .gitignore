@@ -1,6 +1,8 @@
 # package directories
 node_modules
 jspm_packages
+coverage
+.DS_Store
 
 # Serverless directories
 .serverless

@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/femioladeji/slack-words.svg?style=svg)](https://circleci.com/gh/femioladeji/slack-words)
+[![codecov](https://codecov.io/gh/femioladeji/slack-words/branch/master/graph/badge.svg)](https://codecov.io/gh/femioladeji/slack-words)
+
 # slack-words
 Proof of concept for a slack anagram game using AWS lambda functions
 

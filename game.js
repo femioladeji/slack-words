@@ -1,12 +1,11 @@
 const axios = require('axios');
 const aws = require('aws-sdk');
 const qs = require('qs');
+const path = require('path');
 const db = require('./utils/db');
 const app = require('./utils/app');
-require('dotenv').config();
-
-const sqs = new aws.SQS({
-  region: 'us-east-1',
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? path.resolve(process.cwd(), '.env.testing') : path.resolve(process.cwd(), '.env'),
 });
 
 const respond = (callback, statusCode, body) => callback(null, {
@@ -14,7 +13,7 @@ const respond = (callback, statusCode, body) => callback(null, {
   body,
 });
 
-const sendEndMessage = (url, thread, token) => {
+const sendEndMessage = (url, token, thread) => {
   let payload = {
     text: 'Game has ended computing results...',
   };
@@ -50,12 +49,10 @@ module.exports.start = async (event, context, callback) => {
       }));
     }
     await db.insert(process.env.DYNAMO_TABLE_NAME, gameItem);
-    sqs.sendMessage({
+    await new aws.SQS().sendMessage({
       QueueUrl: process.env.SQS_QUEUE_URL,
       MessageBody: JSON.stringify(gameItem),
-    }, (err, data) => {
-      console.log(err, data);
-    });
+    }).promise();
     return respond(callback, 200, JSON.stringify({
       text: `Game started, type as many english words within 60 seconds using \`${gameItem.letters}\``,
       response_type: 'in_channel',
@@ -79,7 +76,7 @@ module.exports.end = async (eventMessage, context, callback) => {
     const { access_token: accessToken, incoming_webhook: incomingHook } = team.Items[0];
     sendEndMessage(event.response_url, accessToken);
     if (thread && thread.trim()) {
-      sendEndMessage(incomingHook.url, thread, accessToken);
+      sendEndMessage(incomingHook.url, accessToken, thread);
     }
 
     const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
@@ -122,6 +119,7 @@ module.exports.submit = async (event, context, callback) => {
     });
     return callback(null, { statusCode: 200 });
   } catch (error) {
+    console.log(error);
     if (error.code === 'ConditionalCheckFailedException') {
       console.log('game has ended');
     }
