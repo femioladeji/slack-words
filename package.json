@@ -1,27 +1,27 @@
 {
-  "name": "slackwords",
-  "version": "1.0.0",
-  "author": "Femi Oladeji",
-  "description": "A slack game that allows you to form english words from random letters",
-  "scripts": {
-    "build": "npx serverless deploy --stage dev",
-    "production": "npx serverless deploy --stage production",
-    "test": "jest && codecov"
-  },
-  "dependencies": {
-    "aws-sdk": "^2.496.0",
-    "axios": "^0.19.0",
-    "dotenv": "^8.0.0",
-    "qs": "^6.7.0"
-  },
-  "devDependencies": {
-    "codecov": "^3.5.0",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "faker": "^4.1.0",
-    "jest": "^24.9.0",
-    "serverless": "^1.48.4",
-    "serverless-dotenv-plugin": "^2.1.1"
-  }
+    "name": "slackwords",
+    "version": "1.0.0",
+    "author": "Femi Oladeji",
+    "description": "A slack game that allows you to form english words from random letters",
+    "scripts": {
+        "build": "npx serverless deploy --stage dev",
+        "production": "npx serverless deploy --stage prod",
+        "test": "jest && codecov"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.496.0",
+        "axios": "^0.19.0",
+        "dotenv": "^8.0.0",
+        "qs": "^6.7.0"
+    },
+    "devDependencies": {
+        "codecov": "^3.5.0",
+        "eslint": "^5.16.0",
+        "eslint-config-airbnb-base": "^13.2.0",
+        "eslint-plugin-import": "^2.18.2",
+        "faker": "^4.1.0",
+        "jest": "^24.9.0",
+        "serverless": "^1.48.4",
+        "serverless-dotenv-plugin": "^2.1.1"
+    }
 }
