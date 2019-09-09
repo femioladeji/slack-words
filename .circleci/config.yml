@@ -34,7 +34,7 @@ jobs:
 
     working_directory: ~/repo
 
-      # Download and cache dependencies
+    steps:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
