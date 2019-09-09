@@ -1,12 +1,15 @@
 const AWS = require('aws-sdk');
+const path = require('path');
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? path.resolve(process.cwd(), '.env.testing') : path.resolve(process.cwd(), '.env'),
+});
 
 AWS.config.update({ region: 'us-east-1' });
-const documentClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
 module.exports = {
   insert(tableName, data) {
     return new Promise((resolve, reject) => {
-      documentClient.put({
+      new AWS.DynamoDB.DocumentClient().put({
         TableName: tableName,
         Item: data,
       }, (error) => {
@@ -18,10 +21,9 @@ module.exports = {
     });
   },
 
-  // eslint-disable-next-line camelcase
   endGame(id) {
     return new Promise((resolve, reject) => {
-      documentClient.update({
+      new AWS.DynamoDB.DocumentClient().update({
         TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id },
         UpdateExpression: 'set active = :status',
@@ -41,7 +43,7 @@ module.exports = {
   // eslint-disable-next-line camelcase
   addWords(id, thread, word) {
     return new Promise((resolve, reject) => {
-      documentClient.update({
+      new AWS.DynamoDB.DocumentClient().update({
         TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id },
         ConditionExpression: 'active = :status',
@@ -62,7 +64,7 @@ module.exports = {
 
   query(tableName, id) {
     return new Promise((resolve, reject) => {
-      documentClient.query({
+      new AWS.DynamoDB.DocumentClient().query({
         TableName: tableName,
         KeyConditionExpression: 'id = :id',
         ExpressionAttributeValues: {

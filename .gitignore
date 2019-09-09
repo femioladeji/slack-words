@@ -7,3 +7,4 @@ coverage
 # Serverless directories
 .serverless
 .env
+.env.staging
