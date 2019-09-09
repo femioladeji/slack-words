@@ -24,10 +24,6 @@ jobs:
 
       - run: yarn test
 
-      - run:
-          name: Deploy application
-          command: yarn build
-
   deploy:
     docker:
       - image: circleci/node:latest
