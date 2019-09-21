@@ -3,6 +3,8 @@ app: slack-words
 service: slack-words 
 plugins:
   - serverless-dotenv-plugin
+  - serverless-dynamodb-local
+  - serverless-offline
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -116,3 +118,16 @@ functions:
           path: slack-auth
           method: post
           cors: true
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
