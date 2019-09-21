@@ -3,8 +3,8 @@ const axios = require('axios');
 const vowels = ['a', 'e', 'i', 'o', 'u'];
 // eslint-disable-next-line max-len
 const consonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z'];
-const min = 10;
-const max = 15;
+const min = 15;
+const max = 20;
 const host = 'wordsapiv1.p.rapidapi.com';
 const key = process.env.DICTIONARY_API_KEY;
 
