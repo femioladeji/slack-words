@@ -61,6 +61,7 @@ module.exports.start = async (event, context, callback) => {
       response_type: 'in_channel',
     }));
   } catch (error) {
+    console.log(error);
     return respond(callback, 200, JSON.stringify({
       text: 'Game was not started',
       response_type: 'ephemeral',
