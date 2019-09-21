@@ -4,8 +4,11 @@ const qs = require('qs');
 const path = require('path');
 const db = require('./utils/db');
 const app = require('./utils/app');
+
+const { NODE_ENV } = process.env;
 require('dotenv').config({
-  path: process.env.NODE_ENV === 'test' ? path.resolve(process.cwd(), '.env.testing') : path.resolve(process.cwd(), '.env'),
+  path: NODE_ENV === 'test' || NODE_ENV === 'staging'
+    ? path.resolve(process.cwd(), `.env.${NODE_ENV}`) : path.resolve(process.cwd(), '.env'),
 });
 
 const respond = (callback, statusCode, body) => callback(null, {
@@ -119,10 +122,9 @@ module.exports.submit = async (event, context, callback) => {
     });
     return callback(null, { statusCode: 200 });
   } catch (error) {
-    console.log(error);
     if (error.code === 'ConditionalCheckFailedException') {
       console.log('game has ended');
     }
-    return callback(null, { statusCode: 200 });
+    return callback(null, { statusCode: 200, body: 'Game has ended' });
   }
 };
