@@ -51,7 +51,6 @@ jobs:
 
   deploy-site:
     docker:
-      - image: circleci/python:latest
       - image: circleci/node:latest
 
     working_directory: ~/repo
@@ -64,7 +63,7 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
 
-      - run: yarn install
+      - run: cd site && yarn install
 
       - save_cache:
           paths:
@@ -72,20 +71,20 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run:
-          name: Install pip
-          command: easy_install pip
+          name: Setup python
+          command: sudo apt-get install python3-pip
       
       - run:
           name: Install aws cli
-          command: pip install awscli
+          command: pip3 install awscli
 
       - run:
           name: build site
-          command: yarn build
+          command: cd site && yarn build
 
       - run:
           name: Sync site to s3
-          command: aws s3 sync ./site slackwords-site/ --exclude ./site/node_modules/**/* ./site/vendor/**/*
+          command: aws s3 sync ./site s3://slackwords-site/ --exclude "./site/node_modules/**/*"
 
 workflows:
   version: 2
