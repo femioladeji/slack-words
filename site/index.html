@@ -47,6 +47,26 @@
     </div>
   </nav>
 
+  <!-- modal -->
+  <div class="modal myModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">SlackWords</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <!-- Masthead -->
   <header class="masthead">
     <div class="container h-100">
@@ -177,8 +197,12 @@
               })
           }).then(res => {
               res.json().then(a => {
-                  alert("Integration done");
+                $('.modal-body p').text('You\'ve successfully added slackwords to your slack team. Welcome onboard 🙌');
+                $('.myModal').modal('show');
               })
+          }).catch(() => {
+            $('.modal-body p').text('An error occurred while adding the slack app. Please report this error via the links in the contact section');
+            $('.myModal').modal('show');
           })
       }
   </script>

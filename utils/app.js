@@ -45,15 +45,15 @@ module.exports = {
 
   groupByUser(scores) {
     const users = {};
-    scores.forEach((each) => {
-      if (!users[each.user]) {
-        users[each.user] = {
+    scores.forEach(({ user, score, word }) => {
+      if (!users[user]) {
+        users[user] = {
           totalScore: 0,
           words: '',
         };
       }
-      users[each.user].totalScore += each.score;
-      users[each.user].words += `${users[each.user].words === '' ? '' : ', '}${each.word}: ${each.score}`;
+      users[user].totalScore += score;
+      users[user].words += `${users[user].words === '' ? '' : ', '}${word}: ${score}`;
     });
     return users;
   },
@@ -110,7 +110,7 @@ module.exports = {
       const slackUrl = `https://slack.com/api/users.info?token=${token}&user=`;
       const detailsRequest = Object.keys(users).map(each => axios.get(`${slackUrl}${each}`));
       let finalScore = await Promise.all(detailsRequest);
-      finalScore = finalScore.map(({ data, status }) => {
+      finalScore = finalScore.map(({ data: { user }, status }) => {
         if (status === 200) {
           return {
             type: 'section',
@@ -120,7 +120,7 @@ module.exports = {
             },
             {
               type: 'plain_text',
-              text: data.user.real_name,
+              text: user.real_name,
               emoji: true,
             },
             {
@@ -129,7 +129,7 @@ module.exports = {
             },
             {
               type: 'plain_text',
-              text: data.user.name,
+              text: user.name,
               emoji: true,
             },
             {
@@ -138,7 +138,7 @@ module.exports = {
             },
             {
               type: 'plain_text',
-              text: `${users[data.user.id].totalScore}`,
+              text: `${users[user.id].totalScore}`,
             },
             {
               type: 'plain_text',
@@ -146,12 +146,12 @@ module.exports = {
             },
             {
               type: 'mrkdwn',
-              text: users[data.user.id].words,
+              text: users[user.id].words,
             }],
             accessory: {
               type: 'image',
-              image_url: data.user.profile.image_72,
-              alt_text: data.user.real_name,
+              image_url: user.profile.image_72,
+              alt_text: user.real_name,
             },
           };
         }

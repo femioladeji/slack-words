@@ -71,14 +71,14 @@ module.exports.start = async (event, context, callback) => {
 module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
   try {
-    const item = await db.endGame(event.id);
+    const { Attributes: gameDetails } = await db.endGame(event.id);
     const {
       letters, words, thread, team_id: teamId,
-    } = item.Attributes;
-    const team = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
-    const { access_token: accessToken, incoming_webhook: incomingHook } = team.Items[0];
+    } = gameDetails;
+    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
+    const { access_token: accessToken, incoming_webhook: incomingHook } = authItem[0];
     sendEndMessage(event.response_url, accessToken);
-    if (thread && thread.trim()) {
+    if (thread) {
       sendEndMessage(incomingHook.url, accessToken, thread);
     }
 
@@ -123,8 +123,8 @@ module.exports.submit = async (event, context, callback) => {
     return callback(null, { statusCode: 200 });
   } catch (error) {
     if (error.code === 'ConditionalCheckFailedException') {
-      console.log('game has ended');
+      return callback(null, { statusCode: 200, body: 'Game has ended' });
     }
-    return callback(null, { statusCode: 200, body: 'Game has ended' });
+    return callback(null, { statusCode: 200, body: 'An error occurred while ending the game' });
   }
 };
