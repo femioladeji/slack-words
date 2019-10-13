@@ -1,5 +1,6 @@
 # package directories
 node_modules
+site/vendor
 jspm_packages
 coverage
 .DS_Store
