@@ -14,4 +14,4 @@ _TECHNOLOGY_
 - Slack Incoming webhook, slash command
 - Words API
 
-![](https://i.ibb.co/XW54xxv/Screenshot-2019-08-04-at-23-48-34.png)
+![](https://i.ibb.co/VVrQhMR/Screenshot-2019-10-13-at-22-25-16.png)

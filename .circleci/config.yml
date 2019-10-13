@@ -84,7 +84,7 @@ jobs:
 
       - run:
           name: Sync site to s3
-          command: aws s3 sync ./site s3://slackwords-site/ --exclude "./site/node_modules/*"
+          command: aws s3 sync ./site s3://slackwords.com/ --exclude "./site/node_modules/*"
 
 workflows:
   version: 2
