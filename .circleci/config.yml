@@ -49,6 +49,42 @@ jobs:
           name: Deploy application
           command: yarn production
 
+  deploy-site:
+    docker:
+      - image: circleci/node:latest
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: cd site && yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          name: Setup python
+          command: sudo apt-get install python3-pip
+      
+      - run:
+          name: Install aws cli
+          command: pip3 install awscli
+
+      - run:
+          name: build site
+          command: cd site && yarn build
+
+      - run:
+          name: Sync site to s3
+          command: aws s3 sync ./site s3://slackwords.com/ --exclude "./site/node_modules/*"
 
 workflows:
   version: 2
@@ -61,3 +97,8 @@ workflows:
           filters:
             branches:
               only: master
+
+      - deploy-site:
+          filters:
+            branches:
+              only: site
