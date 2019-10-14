@@ -78,10 +78,8 @@ module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
   try {
     const { Attributes: gameDetails } = await db.endGame(event.id);
-    const {
-      letters, words, thread, team_id: teamId,
-    } = gameDetails;
-    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
+    const { letters, words, thread } = gameDetails;
+    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.id);
     const { access_token: accessToken, incoming_webhook: incomingHook } = authItem[0];
     sendEndMessage(event.response_url, accessToken);
     if (thread) {
@@ -120,7 +118,6 @@ module.exports.submit = async (event, context, callback) => {
   if (!message.thread_ts || message.text.trim().split(' ').length > 1) {
     return callback(null, { statusCode: 200 });
   }
-  console.log('message', message);
   try {
     const id = `${message.team}${message.channel}`;
     await db.addWords(id, message.thread_ts, {

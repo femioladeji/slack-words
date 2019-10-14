@@ -15,7 +15,7 @@ module.exports.auth = async (event, context, callback) => {
     single_channel: true,
   }));
   const authData = slackAuth.data;
-  authData.id = authData.team_id;
+  authData.id = `${authData.team_id}${authData.incoming_webhook.channel_id}`;
   await db.insert(process.env.SLACK_AUTH_TABLE, slackAuth.data);
   const response = {
     statusCode: 200,
