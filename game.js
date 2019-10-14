@@ -115,6 +115,9 @@ module.exports.submit = async (event, context, callback) => {
     // this is for slack verification
     return respond(callback, 200, challenge);
   }
+  if (message.type === 'app_rate_limited') {
+    return callback(null, { statusCode: 200 });
+  }
   if (!message.thread_ts || message.text.trim().split(' ').length > 1) {
     return callback(null, { statusCode: 200 });
   }
