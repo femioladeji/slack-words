@@ -114,6 +114,7 @@ module.exports.submit = async (event, context, callback) => {
   if (!message.thread_ts || message.text.trim().split(' ').length > 1) {
     return callback(null, { statusCode: 200 });
   }
+  console.log('message', message);
   try {
     const id = `${message.team}${message.channel}`;
     await db.addWords(id, message.thread_ts, {
