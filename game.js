@@ -99,6 +99,7 @@ module.exports.end = async (eventMessage, context, callback) => {
       statusCode: 200,
     });
   } catch (error) {
+    console.log(error);
     await axios.post(event.response_url, JSON.stringify({
       text: 'An error ocurred while ending the game',
       response_type: 'in_channel',
