@@ -23,14 +23,9 @@ module.exports = {
 
   endGame(id) {
     return new Promise((resolve, reject) => {
-      new AWS.DynamoDB.DocumentClient().update({
+      new AWS.DynamoDB.DocumentClient().delete({
         TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id },
-        UpdateExpression: 'set active = :status',
-        ReturnValues: 'ALL_NEW',
-        ExpressionAttributeValues: {
-          ':status': false,
-        },
       }, (err, data) => {
         if (err) {
           return reject(err);

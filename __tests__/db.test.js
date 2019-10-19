@@ -30,21 +30,16 @@ describe('insert', () => {
 
 describe('endGame', () => {
   it('updates the game active field to false', async () => {
-    const mockUpdate = jest.fn((data, cb) => cb(null, dataItem));
+    const mockDelete = jest.fn((data, cb) => cb(null, dataItem));
     aws.DynamoDB.DocumentClient = jest.fn().mockImplementation(() => ({
-      update: mockUpdate,
+      delete: mockDelete,
     }));
     const response = await db.endGame(id);
     expect(response).toStrictEqual(dataItem);
-    expect(mockUpdate).toHaveBeenCalled();
-    expect(mockUpdate.mock.calls[0][0]).toStrictEqual({
+    expect(mockDelete).toHaveBeenCalled();
+    expect(mockDelete.mock.calls[0][0]).toStrictEqual({
       TableName: process.env.DYNAMO_TABLE_NAME,
       Key: { id },
-      UpdateExpression: 'set active = :status',
-      ReturnValues: 'ALL_NEW',
-      ExpressionAttributeValues: {
-        ':status': false,
-      },
     });
   });
 });
