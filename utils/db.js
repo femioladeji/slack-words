@@ -23,14 +23,18 @@ module.exports = {
 
   endGame(id) {
     return new Promise((resolve, reject) => {
-      new AWS.DynamoDB.DocumentClient().delete({
+      new AWS.DynamoDB.DocumentClient().update({
         TableName: process.env.DYNAMO_TABLE_NAME,
         Key: { id },
+        UpdateExpression: 'set active = :status',
+        ReturnValues: 'ALL_NEW',
+        ExpressionAttributeValues: {
+          ':status': false,
+        },
       }, (err, data) => {
         if (err) {
           return reject(err);
         }
-        console.log(JSON.stringify(data, null, 2));
         return resolve(data);
       });
     });
@@ -71,6 +75,19 @@ module.exports = {
           return reject(err);
         }
         return resolve(data);
+      });
+    });
+  },
+
+  delete(tableName, id) {
+    return new Promise((resolve) => {
+      new AWS.DynamoDB.DocumentClient().delete({
+        TableName: tableName,
+        Key: {
+          id,
+        },
+      }, () => {
+        resolve();
       });
     });
   },

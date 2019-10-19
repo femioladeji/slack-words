@@ -30,16 +30,21 @@ describe('insert', () => {
 
 describe('endGame', () => {
   it('updates the game active field to false', async () => {
-    const mockDelete = jest.fn((data, cb) => cb(null, dataItem));
+    const mockUpdate = jest.fn((data, cb) => cb(null, dataItem));
     aws.DynamoDB.DocumentClient = jest.fn().mockImplementation(() => ({
-      delete: mockDelete,
+      update: mockUpdate,
     }));
     const response = await db.endGame(id);
     expect(response).toStrictEqual(dataItem);
-    expect(mockDelete).toHaveBeenCalled();
-    expect(mockDelete.mock.calls[0][0]).toStrictEqual({
+    expect(mockUpdate).toHaveBeenCalled();
+    expect(mockUpdate.mock.calls[0][0]).toStrictEqual({
       TableName: process.env.DYNAMO_TABLE_NAME,
       Key: { id },
+      UpdateExpression: 'set active = :status',
+      ReturnValues: 'ALL_NEW',
+      ExpressionAttributeValues: {
+        ':status': false,
+      },
     });
   });
 });
@@ -82,6 +87,21 @@ describe('query table', () => {
       ExpressionAttributeValues: {
         ':id': id,
       },
+    });
+  });
+});
+
+describe('delete table', () => {
+  it('calls the delete function', async () => {
+    const mockDelete = jest.fn((data, cb) => cb(null, dataItem));
+    aws.DynamoDB.DocumentClient = jest.fn().mockImplementation(() => ({
+      delete: mockDelete,
+    }));
+    await db.delete(tableName, id);
+    expect(mockDelete).toHaveBeenCalled();
+    expect(mockDelete.mock.calls[0][0]).toStrictEqual({
+      TableName: tableName,
+      Key: { id },
     });
   });
 });

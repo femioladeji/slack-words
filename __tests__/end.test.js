@@ -34,6 +34,7 @@ const event = {
 describe('end lambda function', () => {
   it('it works as expected', async () => {
     const callback = jest.fn((error, data) => ({ error, data }));
+    const mockDelete = jest.fn(() => Promise.resolve());
     const mockEndGame = jest.fn(() => Promise.resolve({
       Attributes: {
         team_id: teamId,
@@ -54,6 +55,7 @@ describe('end lambda function', () => {
     const mockResults = jest.fn(() => Promise.resolve(''));
     db.endGame = mockEndGame;
     db.query = mockQuery;
+    db.delete = mockDelete;
     app.computeResults = mockResults;
     axios.post = mockAxioPost;
     await end(event, null, callback);

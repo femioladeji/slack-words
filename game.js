@@ -87,6 +87,7 @@ module.exports.end = async (eventMessage, context, callback) => {
     }
 
     const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
+    await db.delete(process.env.DYNAMO_TABLE_NAME, event.id);
     axios.post(event.response_url, JSON.stringify({
       response_type: 'in_channel',
       blocks: results,
@@ -99,7 +100,6 @@ module.exports.end = async (eventMessage, context, callback) => {
       statusCode: 200,
     });
   } catch (error) {
-    console.log(error);
     await axios.post(event.response_url, JSON.stringify({
       text: 'An error ocurred while ending the game',
       response_type: 'in_channel',
