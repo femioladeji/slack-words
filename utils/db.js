@@ -30,6 +30,7 @@ module.exports = {
         if (err) {
           return reject(err);
         }
+        console.log(JSON.stringify(data, null, 2));
         return resolve(data);
       });
     });
