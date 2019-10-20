@@ -37,7 +37,7 @@ module.exports.start = async (event, context, callback) => {
   const { channel_name: channelName } = gameItem;
   if (channelName === 'directmessage' || channelName === 'privategroup') {
     return respond(callback, 200, JSON.stringify({
-      text: 'You can only play slackwords in a public channel',
+      text: 'You can only play slackwords in a public channel. Please add the app to a public channel',
       response_type: 'ephemeral',
     }));
   }
