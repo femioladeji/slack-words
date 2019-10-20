@@ -82,8 +82,8 @@ module.exports.end = async (eventMessage, context, callback) => {
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.id);
     const { access_token: accessToken, incoming_webhook: incomingHook } = authItem[0];
     sendEndMessage(event.response_url, accessToken);
-    if (thread) {
-      sendEndMessage(incomingHook.url, accessToken, thread);
+    if (thread && thread.trim()) {
+      sendEndMessage(incomingHook.url, accessToken, thread.trim());
     }
 
     const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
