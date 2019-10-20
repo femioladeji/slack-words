@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Slack Words</title>
+
+  <!-- Font Awesome Icons -->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+
+  <!-- Plugin CSS -->
+  <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+  <!-- Theme CSS - Includes Bootstrap -->
+  <link href="css/creative.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand js-scroll-trigger" href="/#page-top">Slack Words</a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto my-2 my-lg-0">
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="index.html">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="container h-100">
+      <div class="row h-100 align-items-center justify-content-center text-center">
+        <div class="col-lg-10 align-self-end">
+          <h1 class="text-uppercase text-white font-weight-bold">SLACK WORDS</h1>
+          <hr class="divider my-4">
+        </div>
+        <div class="col-lg-8 align-self-baseline">
+          <p class="text-white-75 font-weight-light mb-5">A slack game to test your mastery of English and how good you are at forming words from random letters</p>
+          <a href="https://slack.com/oauth/authorize?client_id=198697306055.702655185381&scope=commands,incoming-webhook,channels:history,users:read"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
+          <!-- <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Add To Slack</a> -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- privacy section -->
+  <section>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="mt-4 text-center">Privacy Policy</h2>
+            <hr class="divider my-4">
+            <p class="text-muted mb-5">Slackwords is an open source anagram slack game for fun. Test your mastery of English with colleagues. The most minimal information required for the game to work effectively is collected</p>
+        
+            <h3>1. Information Collected</h3>
+            <p>The following information is collected from slack in order to operate the game</p>
+            <ul>
+                <li>Team ID, ex: `TXXXXXXX`. This allows the game to select the correct authorization token in order to interact with your workspace.</li>
+                <li>Authorization Token, the token granted by Slack to the game in order to securely communicate with your workspace.</li>
+                <li>User IDs of those who submitted words for a game, ex: `UXXXXXX`</li>
+                <li>Channel IDs for communication, ex: `CXXXXXX`</li>
+                <li>Words submitted</li>
+                <li>All the data involved in each game is deleted at the end of the game. The data persisted in the DB are Token, Team ID, Channel ID and Incoming webhook url</li>
+            </ul>
+
+            <h3>2. Security</h3>
+            <p>The information is saved in a secure database</p>
+
+            <h3>3. Third party</h3>
+            <p>Each word submitted is sent to a third party API to confirm if it's an accurate English word</p>
+        
+            <h3>4. Portability</h3>
+            <p>We will attempt to retrieve all information conntected to your USER ID if you request for it</p>
+        </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="page-section" id="contact">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+          <h2 class="mt-0">Let's Get In Touch!</h2>
+          <hr class="divider my-4">
+          <p class="text-muted mb-5">Slackwords is fully open source. If you have encounter any problem using the app please create an <a href="https://github.com/femioladeji/slack-words/issues">issue</a> on github or send a mail</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 ml-auto text-center mb-5 mb-lg-0">
+          <i class="fab fa-github fa-3x mb-3 text-muted"></i>
+          <div>
+              <a target="_blank" class="d-block" href="https://github.com/femioladeji/slack-words">Github</a>
+          </div>
+        </div>
+        <div class="col-lg-4 mr-auto text-center">
+          <i class="fas fa-envelope fa-3x mb-3 text-muted"></i>
+          <a class="d-block" href="mailto:femidotexe@gmail.com">femidotexe@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-light py-5">
+    <div class="container">
+      <div class="small text-center text-muted">Copyright &copy; 2019</div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="js/creative.min.js"></script>
+
+</body>
+
+</html>
