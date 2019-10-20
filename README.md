@@ -1,17 +1,23 @@
 [![CircleCI](https://circleci.com/gh/femioladeji/slack-words.svg?style=svg)](https://circleci.com/gh/femioladeji/slack-words)
 [![codecov](https://codecov.io/gh/femioladeji/slack-words/branch/master/graph/badge.svg)](https://codecov.io/gh/femioladeji/slack-words)
 
-# slack-words
-Proof of concept for a slack anagram game using AWS lambda functions
+# Slackwords
+A slack game to test your mastery of English and how good you are at forming words from random letters
 
-*NOTE*
-This is still a WIP.
+## NOTE
+[http://slackwords.com](http://slackwords.com)
 
-_TECHNOLOGY_
+## TECHNOLOGY
 - AWS Lambda function
 - AWS DynamoDB
 - Serverless Framework
 - Slack Incoming webhook, slash command
 - Words API
+
+## DEVELOPMENT
+- Clone the repo
+- Install all dependencies `npm install` or `yarn`
+- Replace the env.example file with appropriate credentials
+- Check [serverless docs](https://serverless.com/framework/docs/providers/aws/cli-reference/) on how to invoke, test and deploy functions to AWS
 
 ![](https://i.ibb.co/VVrQhMR/Screenshot-2019-10-13-at-22-25-16.png)
