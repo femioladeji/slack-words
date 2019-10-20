@@ -16,9 +16,9 @@ const respond = (callback, statusCode, body) => callback(null, {
   body,
 });
 
-const sendEndMessage = (url, token, thread) => {
+const sendEndMessage = (url, token, numberOfWords, thread) => {
   let payload = {
-    text: 'Game has ended computing results...',
+    text: `Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
   };
   if (thread) {
     payload.thread_ts = thread;
@@ -63,7 +63,7 @@ module.exports.start = async (event, context, callback) => {
       MessageBody: JSON.stringify(gameItem),
     }).promise();
     return respond(callback, 200, JSON.stringify({
-      text: `Game started, type as many english words within 60 seconds using \`${gameItem.letters}\``,
+      text: `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``,
       response_type: 'in_channel',
     }));
   } catch (error) {
@@ -81,21 +81,23 @@ module.exports.end = async (eventMessage, context, callback) => {
     const { letters, words, thread } = gameDetails;
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.id);
     const { access_token: accessToken, incoming_webhook: incomingHook } = authItem[0];
-    sendEndMessage(event.response_url, accessToken);
+    sendEndMessage(event.response_url, accessToken, words.length);
     if (thread && thread.trim()) {
-      sendEndMessage(incomingHook.url, accessToken, thread.trim());
+      sendEndMessage(incomingHook.url, accessToken, words.length, thread.trim());
     }
 
-    const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
     await db.delete(process.env.DYNAMO_TABLE_NAME, event.id);
-    axios.post(event.response_url, JSON.stringify({
-      response_type: 'in_channel',
-      blocks: results,
-    }), {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    if (words.length) {
+      const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
+      axios.post(event.response_url, JSON.stringify({
+        response_type: 'in_channel',
+        blocks: results,
+      }), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
     callback(null, {
       statusCode: 200,
     });
