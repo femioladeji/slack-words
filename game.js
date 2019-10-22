@@ -31,7 +31,10 @@ const sendEndMessage = (url, token, numberOfWords) => {
 module.exports.start = async (event, _context, callback) => {
   const { body, headers } = event;
   console.log(JSON.stringify(event, null, 2));
-  if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature']));
+  console.log('is same? ', app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature']));
+  // if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature'])) {
+  //   return callback(null);
+  // }
   const gameItem = qs.parse(body);
   const { channel_name: channelName } = gameItem;
   if (channelName === 'directmessage' || channelName === 'privategroup') {
