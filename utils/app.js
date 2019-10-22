@@ -170,7 +170,6 @@ module.exports = {
     const stringToHash = `v0:${timestamp}:${body}`;
     const hashed = crypto.createHmac('sha256', process.env.SLACK_SIGNING_SECRET).update(stringToHash).digest('hex');
     console.log(hashed, signature);
-    console.log('test', crypto.timingSafeEqual(hashed, signature));
     return `v0=${hashed}` === signature;
   },
 };

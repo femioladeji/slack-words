@@ -10,6 +10,10 @@ const teamId = faker.random.uuid();
 const channelId = faker.random.uuid();
 const gameLetters = 'A B C D E';
 const startEvent = {
+  headers: {
+    'X-Slack-Request-Timestamp': 12345,
+    'X-Slack-Signature': 487347437843,
+  },
   body: qs.stringify({
     team_id: teamId,
     channel_id: channelId,
