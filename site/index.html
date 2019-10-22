@@ -77,8 +77,7 @@
         </div>
         <div class="col-lg-8 align-self-baseline">
           <p class="text-white-75 font-weight-light mb-5">A slack game to test your mastery of English and how good you are at forming words from random letters</p>
-          <a href="https://slack.com/oauth/authorize?client_id=198697306055.702655185381&scope=commands,incoming-webhook,channels:history,users:read"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
-          <!-- <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Add To Slack</a> -->
+          <a href="#" class="add-to-slack"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
         </div>
       </div>
     </div>
@@ -93,7 +92,7 @@
           <hr class="divider light my-4">
           <p class="text-white-50 mb-4">Do you want to engage in a game of wits with your colleagues at work then this is the game for you. Random letters are sent to the channel and everybody replies in a thread with valid english words for 60 seconds. The result is displayed along with all the words each user entered. If a word has been used by another user or it's an invalid word, it doesn't get scored</p>
           <p class="text-white-50 mb-4">The game can only be played in a public channel</p>
-          <a href="https://slack.com/oauth/authorize?client_id=198697306055.702655185381&scope=commands,incoming-webhook,channels:history,users:read"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
+          <a href="#" class="add-to-slack"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
           <!-- <a class="btn btn-light btn-xl js-scroll-trigger" href="#services">Get Started!</a> -->
         </div>
       </div>
@@ -185,30 +184,57 @@
   <script src="js/creative.min.js"></script>
 
   <script>
-      const url = window.location.href.split(/\?|\&/);
-      if (url[1] && url[1].includes('code')) {
-          const code = url[1].split('=')[1];
-          // const state = url[2].split('=')[1];
-          const slackUrl = 'https://eyjw6r0pik.execute-api.us-east-1.amazonaws.com/prod/slack-auth';
-          window.fetch(slackUrl, {
-              method: 'post',
-              headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                  code
-              })
-          }).then(res => {
-              res.json().then(a => {
-                $('.modal-body p').text('You\'ve successfully added slackwords to your slack team. Welcome onboard 🙌');
-                $('.myModal').modal('show');
-              })
-          }).catch(() => {
-            $('.modal-body p').text('An error occurred while adding the slack app. Please report this error via the links in the contact section');
-            $('.myModal').modal('show');
-          })
+    function randomNumber(maxNum) {
+      return Math.floor(Math.random() * maxNum);
+    }
+    function generateStateCode() {
+      const letters = 'abcdefghijklmnopqrstuvwxyz';
+      let randomCode = '';
+      for (let i = 0; i < 10; i += 1) {
+        randomCode += `${letters[randomNumber(letters.length)]}`;
       }
+      return randomCode;
+    }
+    function authorizeOnSlack() {
+      const stateCode = generateStateCode();
+      localStorage.setItem('state', stateCode);
+      const url = `https://slack.com/oauth/authorize?client_id=198697306055.702655185381&scope=commands,channels:history,users:read&state=${stateCode}`;
+      window.location.href = url;
+    }
+
+    document.querySelector('.add-to-slack').addEventListener('click', () => {
+      authorizeOnSlack();
+    });
+
+    const url = window.location.href.split(/\?|\&/);
+    if (url[1] && url[1].includes('code')) {
+      const code = url[1].split('=')[1];
+      const state = url[2].split('=')[1];
+      if (state !== localStorage.getItem('state')) {
+        $('.modal-body p').text('Something went wrong, Please report this error via the links in the contact section');
+        $('.myModal').modal('show');
+      } else {
+        const slackUrl = 'https://eyjw6r0pik.execute-api.us-east-1.amazonaws.com/prod/slack-auth';
+        window.fetch(slackUrl, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                code
+            })
+        }).then(res => {
+            res.json().then(a => {
+              $('.modal-body p').text('You\'ve successfully added slackwords to your slack team. Welcome onboard 🙌');
+              $('.myModal').modal('show');
+            })
+        }).catch(() => {
+          $('.modal-body p').text('An error occurred while adding the slack app. Please report this error via the links in the contact section');
+          $('.myModal').modal('show');
+        })
+      }
+    }
   </script>
 
 </body>

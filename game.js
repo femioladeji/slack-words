@@ -80,12 +80,10 @@ module.exports.end = async (eventMessage, context, callback) => {
   try {
     const { Attributes: gameDetails } = await db.endGame(event.id);
     const { letters, words, thread } = gameDetails;
+    console.log(thread);
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.id);
-    const { access_token: accessToken, incoming_webhook: incomingHook } = authItem[0];
+    const { access_token: accessToken } = authItem[0];
     sendEndMessage(event.response_url, accessToken, words.length);
-    if (thread && thread.trim()) {
-      sendEndMessage(incomingHook.url, accessToken, words.length, thread.trim());
-    }
 
     await db.delete(process.env.DYNAMO_TABLE_NAME, event.id);
     if (words.length) {
