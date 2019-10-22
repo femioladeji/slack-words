@@ -18,7 +18,7 @@ const respond = (callback, statusCode, body) => callback(null, {
 
 const sendEndMessage = (url, token, numberOfWords) => {
   let payload = {
-    text: `Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
+    text: `@here! Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
   };
   payload = JSON.stringify({ ...payload, response_type: 'in_channel' });
   axios.post(url, payload, {
@@ -28,8 +28,11 @@ const sendEndMessage = (url, token, numberOfWords) => {
   });
 };
 
-module.exports.start = async (event, context, callback) => {
-  const gameItem = qs.parse(event.body);
+module.exports.start = async (event, _context, callback) => {
+  const { body, headers } = event;
+  console.log(JSON.stringify(event, null, 2));
+  if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature']));
+  const gameItem = qs.parse(body);
   const { channel_name: channelName } = gameItem;
   if (channelName === 'directmessage' || channelName === 'privategroup') {
     return respond(callback, 200, JSON.stringify({
@@ -73,7 +76,6 @@ module.exports.start = async (event, context, callback) => {
 
 module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
-  console.log(JSON.stringify(event, null, 2));
   try {
     const { Attributes: gameDetails } = await db.endGame(event.id);
     const { letters, words } = gameDetails;
@@ -109,6 +111,7 @@ module.exports.end = async (eventMessage, context, callback) => {
 };
 
 module.exports.submit = async (event, context, callback) => {
+  console.log(JSON.stringify(event, null, 2));
   const { event: message, challenge } = JSON.parse(event.body);
   if (challenge) {
     // this is for slack verification
