@@ -51,25 +51,21 @@ describe('end lambda function', () => {
         },
       }],
     }));
-    const mockAxioPost = jest.fn(() => Promise.resolve());
+    const mockAxiosPost = jest.fn(() => Promise.resolve());
     const mockResults = jest.fn(() => Promise.resolve(''));
     db.endGame = mockEndGame;
     db.query = mockQuery;
     db.delete = mockDelete;
     app.computeResults = mockResults;
-    axios.post = mockAxioPost;
+    axios.post = mockAxiosPost;
     await end(event, null, callback);
     expect(mockEndGame).toHaveBeenCalledWith(id);
     expect(mockResults).toHaveBeenCalledWith(words, letters.toLowerCase().split(' '), accessToken);
-    expect(mockAxioPost).toHaveBeenNthCalledWith(1, responseUrl, JSON.stringify({
+    expect(mockAxiosPost).toHaveBeenNthCalledWith(1, responseUrl, JSON.stringify({
       ...payload,
       response_type: 'in_channel',
     }), option);
-    expect(mockAxioPost).toHaveBeenNthCalledWith(2, incomingHook, {
-      ...payload,
-      thread_ts: thread,
-    }, option);
-    expect(mockAxioPost).toHaveBeenNthCalledWith(3, responseUrl, JSON.stringify({
+    expect(mockAxiosPost).toHaveBeenNthCalledWith(2, responseUrl, JSON.stringify({
       response_type: 'in_channel',
       blocks: '',
     }), option);
