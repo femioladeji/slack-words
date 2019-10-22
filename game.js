@@ -16,15 +16,11 @@ const respond = (callback, statusCode, body) => callback(null, {
   body,
 });
 
-const sendEndMessage = (url, token, numberOfWords, thread) => {
+const sendEndMessage = (url, token, numberOfWords) => {
   let payload = {
     text: `Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
   };
-  if (thread) {
-    payload.thread_ts = thread;
-  } else {
-    payload = JSON.stringify({ ...payload, response_type: 'in_channel' });
-  }
+  payload = JSON.stringify({ ...payload, response_type: 'in_channel' });
   axios.post(url, payload, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -77,11 +73,11 @@ module.exports.start = async (event, context, callback) => {
 
 module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
+  console.log(JSON.stringify(event, null, 2));
   try {
     const { Attributes: gameDetails } = await db.endGame(event.id);
-    const { letters, words, thread } = gameDetails;
-    console.log(thread);
-    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.id);
+    const { letters, words } = gameDetails;
+    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.team_id);
     const { access_token: accessToken } = authItem[0];
     sendEndMessage(event.response_url, accessToken, words.length);
 
@@ -101,6 +97,7 @@ module.exports.end = async (eventMessage, context, callback) => {
       statusCode: 200,
     });
   } catch (error) {
+    console.log(error);
     await axios.post(event.response_url, JSON.stringify({
       text: 'An error ocurred while ending the game',
       response_type: 'in_channel',
