@@ -14,7 +14,6 @@ module.exports.auth = async (event, context, callback) => {
     client_secret: process.env.SLACK_CLIENT_SECRET,
     single_channel: true,
   }));
-  console.log(slackAuth);
   const authData = slackAuth.data;
   authData.id = authData.team_id;
   await db.insert(process.env.SLACK_AUTH_TABLE, slackAuth.data);
