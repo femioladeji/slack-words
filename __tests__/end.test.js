@@ -14,7 +14,7 @@ const teamId = faker.random.uuid();
 const accessToken = faker.random.uuid();
 const thread = faker.random.uuid();
 const payload = {
-  text: '@here! Game has ended. Computing results...',
+  text: 'Game has ended. Computing results...',
 };
 const option = {
   headers: {

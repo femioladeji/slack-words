@@ -18,7 +18,7 @@ const respond = (callback, statusCode, body) => callback(null, {
 
 const sendEndMessage = (url, token, numberOfWords) => {
   let payload = {
-    text: `@here! Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
+    text: `Game has ended. ${numberOfWords ? 'Computing results...' : 'No submission found'}`,
   };
   payload = JSON.stringify({ ...payload, response_type: 'in_channel' });
   axios.post(url, payload, {
@@ -30,11 +30,9 @@ const sendEndMessage = (url, token, numberOfWords) => {
 
 module.exports.start = async (event, _context, callback) => {
   const { body, headers } = event;
-  console.log(JSON.stringify(event, null, 2));
-  console.log('is same? ', app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature']));
-  // if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature'])) {
-  //   return callback(null);
-  // }
+  if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature'])) {
+    return callback(null, { statusCode: 401 });
+  }
   const gameItem = qs.parse(body);
   const { channel_name: channelName } = gameItem;
   if (channelName === 'directmessage' || channelName === 'privategroup') {
@@ -113,12 +111,15 @@ module.exports.end = async (eventMessage, context, callback) => {
   }
 };
 
-module.exports.submit = async (event, context, callback) => {
-  console.log(JSON.stringify(event, null, 2));
-  const { event: message, challenge } = JSON.parse(event.body);
+module.exports.submit = async (event, _context, callback) => {
+  const { body, headers } = event;
+  const { event: message, challenge } = JSON.parse(body);
   if (challenge) {
     // this is for slack verification
     return respond(callback, 200, challenge);
+  }
+  if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature'])) {
+    return callback(null, { statusCode: 401 });
   }
   if (message.type === 'app_rate_limited') {
     return callback(null, { statusCode: 200 });

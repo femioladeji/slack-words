@@ -2,6 +2,7 @@
 const faker = require('faker');
 const { submit } = require('../game');
 const db = require('../utils/db');
+const helpers = require('./helpers');
 
 const team = faker.random.uuid();
 const channel = faker.random.uuid();
@@ -9,29 +10,46 @@ const thread = faker.random.uuid();
 const challenge = faker.random.uuid();
 const user = faker.internet.userName();
 const text = faker.lorem.word();
+const timeStamp = 12345;
+const body1 = JSON.stringify({
+  challenge,
+});
+const body2 = JSON.stringify({
+  event: {
+    text: faker.lorem.word(),
+  },
+});
+const body3 = JSON.stringify({
+  event: {
+    team,
+    channel,
+    thread_ts: thread,
+    text,
+    user,
+  },
+});
+
 const submitEvent1 = {
-  body: JSON.stringify({
-    challenge,
-  }),
+  headers: {
+    'X-Slack-Request-Timestamp': timeStamp,
+    'X-Slack-Signature': helpers.generateHash(timeStamp, body1),
+  },
+  body: body1,
 };
 const submitEvent2 = {
-  body: JSON.stringify({
-    event: {
-      text: faker.lorem.word(),
-    },
-  }),
+  headers: {
+    'X-Slack-Request-Timestamp': timeStamp,
+    'X-Slack-Signature': helpers.generateHash(timeStamp, body2),
+  },
+  body: body2,
 };
 
 const submitEvent3 = {
-  body: JSON.stringify({
-    event: {
-      team,
-      channel,
-      thread_ts: thread,
-      text,
-      user,
-    },
-  }),
+  headers: {
+    'X-Slack-Request-Timestamp': timeStamp,
+    'X-Slack-Signature': helpers.generateHash(timeStamp, body3),
+  },
+  body: body3,
 };
 
 describe('submit lambda function', () => {

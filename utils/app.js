@@ -169,7 +169,6 @@ module.exports = {
   requestVerification(timestamp, body, signature) {
     const stringToHash = `v0:${timestamp}:${body}`;
     const hashed = crypto.createHmac('sha256', process.env.SLACK_SIGNING_SECRET).update(stringToHash).digest('hex');
-    console.log(hashed, signature);
     return `v0=${hashed}` === signature;
   },
 };

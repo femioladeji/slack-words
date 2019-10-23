@@ -5,19 +5,23 @@ const aws = require('aws-sdk');
 const { start } = require('../game');
 const db = require('../utils/db');
 const app = require('../utils/app');
+const helpers = require('./helpers');
 
 const teamId = faker.random.uuid();
 const channelId = faker.random.uuid();
 const gameLetters = 'A B C D E';
+const body = qs.stringify({
+  team_id: teamId,
+  channel_id: channelId,
+});
+const timeStamp = 12345;
+
 const startEvent = {
   headers: {
-    'X-Slack-Request-Timestamp': 12345,
-    'X-Slack-Signature': 487347437843,
+    'X-Slack-Request-Timestamp': timeStamp,
+    'X-Slack-Signature': helpers.generateHash(timeStamp, body),
   },
-  body: qs.stringify({
-    team_id: teamId,
-    channel_id: channelId,
-  }),
+  body,
 };
 
 it('it returns game already in progress if there\'s an ongoing game', async () => {
