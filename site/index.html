@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>WordsGame</title>
+  <title>WORDSGAME</title>
 
   <!-- Font Awesome Icons -->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -30,7 +30,7 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
     <div class="container">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">WordsGame</a>
+      <a class="navbar-brand js-scroll-trigger" href="#page-top">Wordsgame</a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -52,7 +52,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">SlackWords</h5>
+            <h5 class="modal-title">Wordsgame</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -76,7 +76,7 @@
           <hr class="divider my-4">
         </div>
         <div class="col-lg-8 align-self-baseline">
-          <p class="text-white-75 font-weight-light mb-5">A slack game to test your mastery of English and how good you are at forming words from random letters</p>
+          <p class="text-white-75 font-weight-light mb-5">A Slack game to test your mastery of English and how good you are at forming words from random letters</p>
           <a href="#" class="add-to-slack"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
         </div>
       </div>
@@ -121,7 +121,7 @@
           <div class="mt-5">
             <i class="fas fa-4x fa-stop-circle text-primary mb-4"></i>
             <h3 class="h4 mb-2">Game ends</h3>
-            <p class="text-muted mb-0">Result is posted on the slack channel</p>
+            <p class="text-muted mb-0">Result is posted on the Slack channel</p>
           </div>
         </div>
       </div>
@@ -224,11 +224,11 @@
             })
         }).then(res => {
             res.json().then(a => {
-              $('.modal-body p').text('You\'ve successfully added slackwords to your slack team. Welcome onboard 🙌');
+              $('.modal-body p').text('You\'ve successfully added Wordsgame to your Slack team. Welcome onboard 🙌');
               $('.myModal').modal('show');
             })
         }).catch(() => {
-          $('.modal-body p').text('An error occurred while adding the slack app. Please report this error via the links in the contact section');
+          $('.modal-body p').text('An error occurred while adding the Slack app. Please report this error via the links in the contact section');
           $('.myModal').modal('show');
         })
       }
