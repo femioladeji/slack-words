@@ -96,7 +96,7 @@ functions:
   end:
     handler: game.end
     name: end_game
-    timeout: 5
+    timeout: 10
     events:
       - sqs: ${env:SQS_QUEUE_ARN}
 
@@ -104,6 +104,7 @@ functions:
     handler: game.submit
     name: submit_words
     timeout: 5
+    memory: 128
     events:
       - http:
           path: submit
