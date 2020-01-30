@@ -20,4 +20,7 @@ A slack game to test your mastery of English and how good you are at forming wor
 - Replace the env.example file with appropriate credentials
 - Check [serverless docs](https://serverless.com/framework/docs/providers/aws/cli-reference/) on how to invoke, test and deploy functions to AWS
 
+
+<a href="https://www.buymeacoffee.com/amkx0Lh" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
+
 ![](https://i.ibb.co/VVrQhMR/Screenshot-2019-10-13-at-22-25-16.png)
