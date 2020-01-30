@@ -16,7 +16,11 @@ module.exports.auth = async (event, context, callback) => {
   }));
   const authData = slackAuth.data;
   authData.id = authData.team_id;
-  await db.insert(process.env.SLACK_AUTH_TABLE, slackAuth.data);
+  try {
+    await db.insert(process.env.SLACK_AUTH_TABLE, slackAuth.data);
+  } catch (error) {
+    console.log(error);
+  }
   const response = {
     statusCode: 200,
     headers: {
