@@ -5,12 +5,12 @@ const { end } = require('../game');
 const db = require('../utils/db');
 const app = require('../utils/app');
 
-const words = faker.random.words().split(' ');
+const words = faker.lorem.sentence().split(' ');
 const id = faker.random.uuid();
 const responseUrl = faker.internet.url();
-const incomingHook = faker.internet.url();
 const letters = 'A B C D';
 const teamId = faker.random.uuid();
+const channelId = faker.random.uuid();
 const accessToken = faker.random.uuid();
 const thread = faker.random.uuid();
 const payload = {
@@ -26,41 +26,42 @@ const event = {
   Records: [{
     body: JSON.stringify({
       id,
+      team_id: teamId,
+      channel_id: channelId,
+      letters,
+      thread,
       response_url: responseUrl,
     }),
   }],
+};
+
+const authItem = {
+  id: teamId,
+  access_token: faker.random.uuid(),
+  authed_user: {
+    access_token: accessToken,
+  },
 };
 
 describe('end lambda function', () => {
   it('it works as expected', async () => {
     const callback = jest.fn((error, data) => ({ error, data }));
     const mockDelete = jest.fn(() => Promise.resolve());
-    const mockEndGame = jest.fn(() => Promise.resolve({
-      Attributes: {
-        team_id: teamId,
-        thread,
-        letters,
-        words,
-      },
-    }));
     const mockQuery = jest.fn(() => Promise.resolve({
-      Items: [{
-        access_token: accessToken,
-        incoming_webhook: {
-          url: incomingHook,
-        },
-      }],
+      Items: [authItem],
     }));
     const mockAxiosPost = jest.fn(() => Promise.resolve());
+    const mockAxiosGet = jest.fn(() => Promise.resolve({ data: { messages: words } }));
     const mockResults = jest.fn(() => Promise.resolve(''));
-    db.endGame = mockEndGame;
     db.query = mockQuery;
     db.delete = mockDelete;
     app.computeResults = mockResults;
     axios.post = mockAxiosPost;
+    axios.get = mockAxiosGet;
     await end(event, null, callback);
-    expect(mockEndGame).toHaveBeenCalledWith(id);
-    expect(mockResults).toHaveBeenCalledWith(words, letters.toLowerCase().split(' '), accessToken);
+    expect(mockQuery).toHaveBeenCalledWith(process.env.SLACK_AUTH_TABLE, teamId);
+    expect(mockAxiosGet).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.authed_user.access_token}&channel=${channelId}&ts=${thread}`);
+    expect(mockResults).toHaveBeenCalledWith(words.slice(1), letters.toLowerCase().split(' '), accessToken);
     expect(mockAxiosPost).toHaveBeenNthCalledWith(1, responseUrl, JSON.stringify({
       ...payload,
       response_type: 'in_channel',
