@@ -1,6 +1,6 @@
 org: femioladeji
-app: slack-words
-service: slack-words 
+app: slack-wordsgame
+service: slack-wordsgame 
 plugins:
   - serverless-dotenv-plugin
   - serverless-dynamodb-local
@@ -50,6 +50,7 @@ resources:
 provider:
   name: aws
   runtime: nodejs10.x
+  region: us-west-2
   versionFunctions: false
   iamRoleStatements: # permissions for all of your functions can be set here
     - Effect: Allow
@@ -96,19 +97,9 @@ functions:
   end:
     handler: game.end
     name: end_game
-    timeout: 10
+    timeout: 20
     events:
       - sqs: ${env:SQS_QUEUE_ARN}
-
-  submit:
-    handler: game.submit
-    name: submit_words
-    timeout: 5
-    memory: 128
-    events:
-      - http:
-          path: submit
-          method: post
 
   slack-auth:
     handler: slack.auth

@@ -3,7 +3,7 @@ const qs = require('qs');
 const db = require('./utils/db');
 require('dotenv').config();
 
-const slackUrl = 'https://slack.com/api/oauth.access';
+const slackUrl = 'https://slack.com/api/oauth.v2.access';
 
 module.exports.auth = async (event, context, callback) => {
   const { body } = event;
@@ -15,7 +15,7 @@ module.exports.auth = async (event, context, callback) => {
     single_channel: true,
   }));
   const authData = slackAuth.data;
-  authData.id = authData.team_id;
+  authData.id = authData.team.id;
   try {
     await db.insert(process.env.SLACK_AUTH_TABLE, slackAuth.data);
   } catch (error) {

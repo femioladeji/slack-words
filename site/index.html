@@ -198,7 +198,7 @@
     function authorizeOnSlack() {
       const stateCode = generateStateCode();
       localStorage.setItem('state', stateCode);
-      const url = `https://slack.com/oauth/authorize?client_id=198697306055.702655185381&scope=commands,channels:history,users:read&state=${stateCode}`;
+      const url = `https://slack.com/oauth/v2/authorize?client_id=198697306055.934004732659&scope=commands&user_scope=channels:history,chat:write,users:read&state=${stateCode}`;
       window.location.href = url;
     }
 
@@ -214,7 +214,7 @@
         $('.modal-body p').text('Something went wrong, Please report this error via the links in the contact section');
         $('.myModal').modal('show');
       } else {
-        const slackUrl = 'https://eyjw6r0pik.execute-api.us-east-1.amazonaws.com/prod/slack-auth';
+        const slackUrl = 'https://29bxj7hue9.execute-api.us-west-2.amazonaws.com/prod/slack-auth';
         window.fetch(slackUrl, {
             method: 'post',
             headers: {
