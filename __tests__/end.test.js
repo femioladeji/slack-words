@@ -37,10 +37,7 @@ const event = {
 
 const authItem = {
   id: teamId,
-  access_token: faker.random.uuid(),
-  authed_user: {
-    access_token: accessToken,
-  },
+  access_token: accessToken,
 };
 
 describe('end lambda function', () => {
@@ -60,8 +57,8 @@ describe('end lambda function', () => {
     axios.get = mockAxiosGet;
     await end(event, null, callback);
     expect(mockQuery).toHaveBeenCalledWith(process.env.SLACK_AUTH_TABLE, teamId);
-    expect(mockAxiosGet).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.authed_user.access_token}&channel=${channelId}&ts=${thread}`);
-    expect(mockResults).toHaveBeenCalledWith(words.slice(1), letters.toLowerCase().split(' '), accessToken);
+    expect(mockAxiosGet).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.access_token}&channel=${channelId}&ts=${thread}`);
+    expect(mockResults).toHaveBeenCalledWith(words.slice(1), letters.toLowerCase().split(' '), authItem.access_token);
     expect(mockAxiosPost).toHaveBeenNthCalledWith(1, responseUrl, JSON.stringify({
       ...payload,
       response_type: 'in_channel',
