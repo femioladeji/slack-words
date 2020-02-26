@@ -58,8 +58,9 @@ module.exports.start = async (event, _context, callback) => {
       }));
     }
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
-    const { access_token: accessToken } = authItem[0].authed_user;
+    const { access_token: accessToken } = authItem[0];
     const text = `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``;
+    await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
     const message = await axios.post(`https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${gameItem.channel_id}&text=${text}`);
     gameItem.thread = message.data.ts;
     await db.insert(process.env.DYNAMO_TABLE_NAME, gameItem);
@@ -89,7 +90,7 @@ module.exports.end = async (eventMessage, context, callback) => {
 
   try {
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
-    const { access_token: accessToken } = authItem[0].authed_user;
+    const { access_token: accessToken } = authItem[0];
     const allMessages = await axios.get(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
     const words = allMessages.data.messages.slice(1);
     sendEndMessage(responseUrl, accessToken, words.length);

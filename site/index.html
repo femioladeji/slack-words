@@ -198,7 +198,7 @@
     function authorizeOnSlack() {
       const stateCode = generateStateCode();
       localStorage.setItem('state', stateCode);
-      const url = `https://slack.com/oauth/v2/authorize?client_id=198697306055.934004732659&scope=commands&user_scope=channels:history,chat:write,users:read&state=${stateCode}`;
+      const url = `https://slack.com/oauth/v2/authorize?client_id=198697306055.934004732659&scope=commands,chat:write,users:read,channels:history,channels:join&state=${stateCode}`;
       window.location.href = url;
     }
 

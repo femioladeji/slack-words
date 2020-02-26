@@ -29,9 +29,6 @@ const startEvent = {
 const authItem = {
   id: teamId,
   access_token: faker.random.uuid(),
-  authed_user: {
-    access_token: faker.random.uuid(),
-  },
 };
 
 it('it returns game already in progress if there\'s an ongoing game', async () => {
@@ -87,8 +84,10 @@ it('it starts a new game if there\'s no ongoing game', async () => {
   expect(querySpy).toHaveBeenNthCalledWith(1, process.env.DYNAMO_TABLE_NAME, id);
   expect(querySpy).toHaveBeenNthCalledWith(2, process.env.SLACK_AUTH_TABLE, teamId);
   expect(insertSpy).toHaveBeenCalled();
-  const url = `https://slack.com/api/chat.postMessage?token=${authItem.authed_user.access_token}&channel=${channelId}&text=${text}`;
-  expect(mockAxiosPost).toHaveBeenCalledWith(url);
+  const joinUrl = `https://slack.com/api/conversations.join?token=${authItem.access_token}&channel=${channelId}`;
+  const url = `https://slack.com/api/chat.postMessage?token=${authItem.access_token}&channel=${channelId}&text=${text}`;
+  expect(mockAxiosPost).toHaveBeenNthCalledWith(1, joinUrl);
+  expect(mockAxiosPost).toHaveBeenNthCalledWith(2, url);
   expect(mockSendMessage).toHaveBeenCalled();
   expect(callbackFunc.mock.calls.length).toBe(1);
   const { error, data } = callbackFunc.mock.results[0].value;
