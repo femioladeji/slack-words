@@ -5,7 +5,8 @@
     "description": "A slack game that allows you to form english words from random letters",
     "scripts": {
         "production": "serverless deploy --stage prod",
-        "test": "jest && codecov"
+        "test": "jest && codecov",
+        "dev": "serverless offline start"
     },
     "dependencies": {
         "aws-sdk": "^2.496.0",

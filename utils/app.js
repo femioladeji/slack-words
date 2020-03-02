@@ -62,20 +62,26 @@ module.exports = {
   computeResults(entries, alphabets, token) {
     return new Promise(async (resolve, reject) => {
       const foundWords = [];
-      let dictionaryCheck = entries.map(({ word }) => {
-        if (foundWords.includes(word)) {
+      let dictionaryCheck = entries.map((eachReply) => {
+        const { text } = eachReply;
+        if (eachReply.type !== 'message' || !text) {
+          return Promise.resolve({
+            status: 400,
+          });
+        }
+        if (foundWords.includes(text)) {
           // someone has already entered the word
           return Promise.resolve({
             status: 400,
           });
         }
-        if (!this.isWordValid(word, alphabets)) {
+        if (!this.isWordValid(text, alphabets)) {
           return Promise.resolve({
             status: 400,
           });
         }
-        foundWords.push(word);
-        const url = `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`;
+        foundWords.push(text);
+        const url = `https://wordsapiv1.p.rapidapi.com/words/${text}/definitions`;
         return axios.get(url, {
           headers: {
             'x-rapidapi-host': host,
@@ -90,12 +96,12 @@ module.exports = {
           const { status } = dictionaryCheck[index];
           let wordValue = 0;
           if (status === 200) {
-            wordValue = this.rateWord(each.word);
+            wordValue = this.rateWord(each.text);
           }
           return {
             user: each.user,
             score: wordValue,
-            word: status === 200 ? each.word : `~${each.word}~`,
+            word: status === 200 ? each.text : `~${each.text}~`,
           };
         });
         const results = await this.getUsers(this.groupByUser(score), token);

@@ -4,7 +4,7 @@ require('dotenv').config({
   path: process.env.NODE_ENV === 'test' ? path.resolve(process.cwd(), '.env.testing') : path.resolve(process.cwd(), '.env'),
 });
 
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({ region: 'us-west-2' });
 
 module.exports = {
   insert(tableName, data) {

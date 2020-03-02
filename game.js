@@ -46,7 +46,6 @@ module.exports.start = async (event, _context, callback) => {
     gameItem.start = Date.now();
     gameItem.letters = app.generateLetters();
     gameItem.active = true;
-    gameItem.words = [];
     gameItem.thread = ' ';
     delete gameItem.text;
     delete gameItem.token;
@@ -58,15 +57,18 @@ module.exports.start = async (event, _context, callback) => {
         response_type: 'in_channel',
       }));
     }
+    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
+    const { access_token: accessToken } = authItem[0];
+    const text = `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``;
+    await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
+    const message = await axios.post(`https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${gameItem.channel_id}&text=${text}`);
+    gameItem.thread = message.data.ts;
     await db.insert(process.env.DYNAMO_TABLE_NAME, gameItem);
     await new aws.SQS().sendMessage({
       QueueUrl: process.env.SQS_QUEUE_URL,
       MessageBody: JSON.stringify(gameItem),
     }).promise();
-    return respond(callback, 200, JSON.stringify({
-      text: `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``,
-      response_type: 'in_channel',
-    }));
+    return respond(callback, 200);
   } catch (error) {
     return respond(callback, 200, JSON.stringify({
       text: 'Game was not started',
@@ -77,17 +79,26 @@ module.exports.start = async (event, _context, callback) => {
 
 module.exports.end = async (eventMessage, context, callback) => {
   const event = JSON.parse(eventMessage.Records[0].body);
-  try {
-    const { Attributes: gameDetails } = await db.endGame(event.id);
-    const { letters, words } = gameDetails;
-    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, event.team_id);
-    const { access_token: accessToken } = authItem[0];
-    sendEndMessage(event.response_url, accessToken, words.length);
+  const {
+    id,
+    team_id: teamId,
+    letters,
+    channel_id: channelId,
+    thread,
+    response_url: responseUrl,
+  } = event;
 
-    await db.delete(process.env.DYNAMO_TABLE_NAME, event.id);
+  try {
+    const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
+    const { access_token: accessToken } = authItem[0];
+    const allMessages = await axios.get(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
+    const words = allMessages.data.messages.slice(1);
+    sendEndMessage(responseUrl, accessToken, words.length);
+
+    await db.delete(process.env.DYNAMO_TABLE_NAME, id);
     if (words.length) {
       const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
-      axios.post(event.response_url, JSON.stringify({
+      axios.post(responseUrl, JSON.stringify({
         response_type: 'in_channel',
         blocks: results,
       }), {
@@ -101,43 +112,12 @@ module.exports.end = async (eventMessage, context, callback) => {
     });
   } catch (error) {
     console.log(error);
-    await axios.post(event.response_url, JSON.stringify({
+    await axios.post(responseUrl, JSON.stringify({
       text: 'An error ocurred while ending the game',
       response_type: 'in_channel',
     }));
     callback(null, {
       statusCode: 500,
     });
-  }
-};
-
-module.exports.submit = async (event, _context, callback) => {
-  const { body, headers } = event;
-  const { event: message, challenge } = JSON.parse(body);
-  if (challenge) {
-    // this is for slack verification
-    return respond(callback, 200, challenge);
-  }
-  if (!app.requestVerification(headers['X-Slack-Request-Timestamp'], body, headers['X-Slack-Signature'])) {
-    return callback(null, { statusCode: 401 });
-  }
-  if (message.type === 'app_rate_limited') {
-    return callback(null, { statusCode: 200 });
-  }
-  if (!message.thread_ts || message.text.trim().split(' ').length > 1) {
-    return callback(null, { statusCode: 200 });
-  }
-  try {
-    const id = `${message.team}${message.channel}`;
-    await db.addWords(id, message.thread_ts, {
-      user: message.user,
-      word: message.text,
-    });
-    return callback(null, { statusCode: 200 });
-  } catch (error) {
-    if (error.code === 'ConditionalCheckFailedException') {
-      return callback(null, { statusCode: 200, body: 'Game has ended' });
-    }
-    return callback(null, { statusCode: 200, body: 'An error occurred while ending the game' });
   }
 };

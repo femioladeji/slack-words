@@ -73,32 +73,41 @@ describe('group users', () => {
 
 describe('computeResults', () => {
   const entries = [{
-    word: 'mum',
+    text: 'mum',
     user: 'user2',
+    type: 'message',
   }, {
-    word: 'box',
+    text: 'box',
     user: 'user1',
+    type: 'message',
   }, {
-    word: 'ox',
+    text: 'ox',
     user: 'user1',
+    type: 'message',
   }, {
-    word: 'dot',
+    text: 'dot',
     user: 'user1',
+    type: 'message',
   }, {
-    word: 'lame',
+    text: 'lame',
     user: 'user2',
+    type: 'message',
   }, {
-    word: 'mole',
+    text: 'mole',
     user: 'user2',
+    type: 'message',
   }, {
-    word: 'invalid',
+    text: 'invalid',
     user: 'user1',
+    type: 'message',
   }, {
-    word: 'mole',
+    text: 'mole',
     user: 'user1',
+    type: 'message',
   }, {
-    word: 'lej',
+    text: 'lej',
     user: 'user1',
+    type: 'message',
   }];
   const alphabetLetters = 'O M N M U M M L E J D T O X B'.toLowerCase().split(' ');
   const token = faker.random.uuid();
