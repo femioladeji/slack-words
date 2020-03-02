@@ -71,7 +71,7 @@ module.exports.start = async (event, _context, callback) => {
     return respond(callback, 200);
   } catch (error) {
     return respond(callback, 200, JSON.stringify({
-      text: 'Game was not started',
+      text: 'Game was not started, a new version was recently released. Please reinstall the game',
       response_type: 'ephemeral',
     }));
   }
