@@ -59,11 +59,12 @@ describe('end lambda function', () => {
     expect(mockQuery).toHaveBeenCalledWith(process.env.SLACK_AUTH_TABLE, teamId);
     expect(mockAxiosGet).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.access_token}&channel=${channelId}&ts=${thread}`);
     expect(mockResults).toHaveBeenCalledWith(words.slice(1), letters.toLowerCase().split(' '), authItem.access_token);
-    expect(mockAxiosPost).toHaveBeenNthCalledWith(1, responseUrl, JSON.stringify({
+    expect(mockAxiosPost).toHaveBeenNthCalledWith(1, `https://slack.com/api/conversations.join?token=${authItem.access_token}&channel=${channelId}`);
+    expect(mockAxiosPost).toHaveBeenNthCalledWith(2, responseUrl, JSON.stringify({
       ...payload,
       response_type: 'in_channel',
     }), option);
-    expect(mockAxiosPost).toHaveBeenNthCalledWith(2, responseUrl, JSON.stringify({
+    expect(mockAxiosPost).toHaveBeenNthCalledWith(3, responseUrl, JSON.stringify({
       response_type: 'in_channel',
       blocks: '',
     }), option);
