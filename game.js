@@ -91,11 +91,12 @@ module.exports.end = async (eventMessage, context, callback) => {
   try {
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, teamId);
     const { access_token: accessToken } = authItem[0];
+    await db.delete(process.env.DYNAMO_TABLE_NAME, id);
+    await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${channelId}`);
     const allMessages = await axios.get(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
     const words = allMessages.data.messages.slice(1);
     sendEndMessage(responseUrl, accessToken, words.length);
 
-    await db.delete(process.env.DYNAMO_TABLE_NAME, id);
     if (words.length) {
       const results = await app.computeResults(words, letters.toLowerCase().split(' '), accessToken);
       axios.post(responseUrl, JSON.stringify({
