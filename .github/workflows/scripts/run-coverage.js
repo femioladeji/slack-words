@@ -5,19 +5,14 @@ const { GitHub, context } = require("@actions/github");
 const main = async () => {
   const repoName = context.repo.repo;
   const repoOwner = context.repo.owner;
-  const githubToken = core.getInput("TOKEN");
-  const testCommand = "npm t";
+  const githubToken = process.argv.slice(2)[0];
+  const prNumber = context.payload.number;
+
+  console.log(JSON.stringify(context.payload, null, 2))
+
+  const testCommand = "npx jest";
 
   const githubClient = new GitHub(githubToken);
-  const commitPRs = await githubClient.repos.listPullRequestsAssociatedWithCommit(
-    {
-      repo: repoName,
-      owner: repoOwner,
-      commit_sha: context.sha
-    }
-  );
-  console.log(JSON.stringify(commitPRs));
-  const prNumber = commitPRs.data[0].number;
 
   const codeCoverage = execSync(testCommand).toString();
   let coveragePercentage = execSync(
