@@ -18,9 +18,3 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '10.x'
-      - name: 'Check whether the `version` in the `package.json` has been updated'
-        env:
-          NEW_COMMIT: ${{ github.event.after }}
-          OLD_COMMIT: ${{ 'master' }}
-          SCRIPT: ${{ '.github/workflows/scripts/validate-package-version-change.sh' }}
-        run: bash $SCRIPT
