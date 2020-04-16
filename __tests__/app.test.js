@@ -136,3 +136,20 @@ describe('computeResults', () => {
     }, token);
   });
 });
+
+describe('sortScore', () => {
+  it('used to sort score by returning different between two scores', () => {
+    const userA = {
+      fields: ['', '', '', '', '', {
+        text: '5',
+      }],
+    };
+    const userB = {
+      fields: ['', '', '', '', '', {
+        text: '8',
+      }],
+    };
+    const diff = app.sortScore(userA, userB);
+    expect(diff).toEqual(3)
+  });
+});
