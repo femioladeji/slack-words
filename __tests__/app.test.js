@@ -108,6 +108,10 @@ describe('computeResults', () => {
     text: 'lej',
     user: 'user1',
     type: 'message',
+  }, {
+    text: 'lej',
+    user: 'user1',
+    type: 'invalid',
   }];
   const alphabetLetters = 'O M N M U M M L E J D T O X B'.toLowerCase().split(' ');
   const token = faker.random.uuid();
