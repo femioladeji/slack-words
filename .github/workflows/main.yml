@@ -1,0 +1,13 @@
+name: 'Run CodeCoverage Report'
+
+on: pull_request
+
+jobs:
+  comment:
+    name: sample comment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ziishaned/jest-reporter-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          test-command: "yarn jest --coverage"
