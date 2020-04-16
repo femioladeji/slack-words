@@ -108,6 +108,10 @@ describe('computeResults', () => {
     text: 'lej',
     user: 'user1',
     type: 'message',
+  }, {
+    text: 'lje',
+    user: 'user2',
+    type: 'invalid',
   }];
   const alphabetLetters = 'O M N M U M M L E J D T O X B'.toLowerCase().split(' ');
   const token = faker.random.uuid();
@@ -127,7 +131,7 @@ describe('computeResults', () => {
       },
       user2: {
         totalScore: 7,
-        words: 'mum: 3, ~lame~: 0, mole: 4',
+        words: 'mum: 3, ~lame~: 0, mole: 4, ~lje~: 0',
       },
     }, token);
   });
