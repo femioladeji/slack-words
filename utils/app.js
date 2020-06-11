@@ -63,7 +63,8 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       const foundWords = [];
       let dictionaryCheck = entries.map((eachReply) => {
-        const { text } = eachReply;
+        let { text } = eachReply;
+        text = text.toLowerCase();
         if (eachReply.type !== 'message' || !text) {
           return Promise.resolve({
             status: 400,
