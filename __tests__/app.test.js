@@ -150,6 +150,6 @@ describe('sortScore', () => {
       }],
     };
     const diff = app.sortScore(userA, userB);
-    expect(diff).toEqual(3)
+    expect(diff).toEqual(3);
   });
 });

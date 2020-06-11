@@ -1,18 +1,17 @@
 const core = require("@actions/core");
 const { execSync } = require("child_process");
-const { GitHub, context } = require("@actions/github");
+const github = require("@actions/github");
 
+const context = github.context;
 const main = async () => {
   const repoName = context.repo.repo;
   const repoOwner = context.repo.owner;
   const githubToken = process.argv.slice(2)[0];
   const prNumber = context.payload.number;
 
-  console.log(JSON.stringify(context.payload, null, 2))
-
   const testCommand = "npx jest";
 
-  const githubClient = new GitHub(githubToken);
+  const octokit = github.getOctokit(githubToken);
 
   const codeCoverage = execSync(testCommand).toString();
   let coveragePercentage = execSync(
@@ -27,7 +26,7 @@ const main = async () => {
 </p>
 </details>`;
 
-  await githubClient.issues.createComment({
+  await octokit.issues.createComment({
     repo: repoName,
     owner: repoOwner,
     body: commentBody,
