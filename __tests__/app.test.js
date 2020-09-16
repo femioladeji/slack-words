@@ -118,6 +118,9 @@ describe('computeResults', () => {
   it('calculates the right result', async () => {
     const mockAxiosGet = jest.fn(url => Promise.resolve({
       status: url.includes('lej') ? 404 : 200,
+      data: {
+        result_code: url.includes('lej') ? "404" : "200"
+      }
     }));
     axios.get = mockAxiosGet;
     const mockGetUsers = jest.fn(() => Promise.resolve([]));

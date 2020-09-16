@@ -6,7 +6,7 @@ const vowels = ['a', 'e', 'i', 'o', 'u'];
 const consonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z'];
 const min = 15;
 const max = 20;
-const host = 'wordsapiv1.p.rapidapi.com';
+const host = 'twinword-word-graph-dictionary.p.rapidapi.com';
 const key = process.env.DICTIONARY_API_KEY;
 
 const randomNumber = maxNum => Math.floor(Math.random() * maxNum);
@@ -82,7 +82,7 @@ module.exports = {
           });
         }
         foundWords.push(text);
-        const url = `https://wordsapiv1.p.rapidapi.com/words/${text}/definitions`;
+        const url = `https://twinword-word-graph-dictionary.p.rapidapi.com/definition/?entry=${text}`;
         return axios.get(url, {
           headers: {
             'x-rapidapi-host': host,
@@ -94,9 +94,9 @@ module.exports = {
       try {
         dictionaryCheck = await Promise.all(dictionaryCheck);
         const score = entries.map((each, index) => {
-          const { status } = dictionaryCheck[index];
+          const { status, data } = dictionaryCheck[index];
           let wordValue = 0;
-          if (status === 200) {
+          if (status === 200 && data && data.result_code === "200") {
             wordValue = this.rateWord(each.text);
           }
           return {
