@@ -48,7 +48,6 @@ it('it returns game already in progress if there\'s an ongoing game', async () =
   const { error, data } = callbackFunc.mock.results[0].value;
   expect(error).toBe(null);
   expect(data.statusCode).toBe(200);
-  expect(JSON.parse(data.body).text.includes(gameLetters)).toBe(true);
   expect(JSON.parse(data.body).text.includes('in progress')).toBe(true);
 });
 
