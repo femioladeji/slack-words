@@ -53,7 +53,7 @@ module.exports.start = async (event, _context, callback) => {
     const { Count, Items } = await db.query(process.env.DYNAMO_TABLE_NAME, gameItem.id);
     if (Count > 0 && Items[0].active) {
       return respond(callback, 200, JSON.stringify({
-        text: `There's a game in progress with \`${Items[0].letters}\``,
+        text: 'There\'s a game in progress',
         response_type: 'in_channel',
       }));
     }
@@ -71,7 +71,7 @@ module.exports.start = async (event, _context, callback) => {
     return respond(callback, 200);
   } catch (error) {
     return respond(callback, 200, JSON.stringify({
-      text: 'Game was not started, a new version was recently released. Please reinstall the game',
+      text: 'Game was not started, please report this error',
       response_type: 'ephemeral',
     }));
   }
