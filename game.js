@@ -42,6 +42,14 @@ module.exports.start = async (event, _context, callback) => {
     }));
   }
   try {
+    let time = parseInt(gameItem.text, 10);
+    if (!Number.isInteger(time) || time < 0) {
+      time = 1;
+    } else if (time > 15) {
+      time = 15;
+    } else {
+      time = time || 1;
+    }
     gameItem.id = `${gameItem.team_id}${gameItem.channel_id}`;
     gameItem.start = Date.now();
     gameItem.letters = app.generateLetters();
@@ -59,7 +67,7 @@ module.exports.start = async (event, _context, callback) => {
     }
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
     const { access_token: accessToken } = authItem[0];
-    const text = `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``;
+    const text = `Game started, type as many english words in the thread within ${time} ${time > 1 ? 'minutes' : 'minute'} using \`${gameItem.letters}\``;
     await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
     const message = await axios.post(`https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${gameItem.channel_id}&text=${text}`);
     gameItem.thread = message.data.ts;
@@ -67,6 +75,7 @@ module.exports.start = async (event, _context, callback) => {
     await new aws.SQS().sendMessage({
       QueueUrl: process.env.SQS_QUEUE_URL,
       MessageBody: JSON.stringify(gameItem),
+      DelaySeconds: time * 60,
     }).promise();
     return respond(callback, 200);
   } catch (error) {
