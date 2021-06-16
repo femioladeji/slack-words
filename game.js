@@ -94,6 +94,7 @@ module.exports.end = async (eventMessage, context, callback) => {
     await db.delete(process.env.DYNAMO_TABLE_NAME, id);
     await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${channelId}`);
     const allMessages = await axios.get(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
+    console.log(allMessages.data);
     const words = allMessages.data.messages.slice(1);
     sendEndMessage(responseUrl, accessToken, words.length);
 
@@ -114,7 +115,7 @@ module.exports.end = async (eventMessage, context, callback) => {
   } catch (error) {
     console.log(error);
     await axios.post(responseUrl, JSON.stringify({
-      text: 'An error ocurred while ending the game',
+      text: 'An error occurred while ending the game',
       response_type: 'in_channel',
     }));
     callback(null, {
