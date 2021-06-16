@@ -1,6 +1,6 @@
 {
     "name": "slackwords",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "author": "Femi Oladeji",
     "description": "A slack game that allows you to form english words from random letters",
     "scripts": {
