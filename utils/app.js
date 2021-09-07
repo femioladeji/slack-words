@@ -178,4 +178,25 @@ module.exports = {
     const hashed = crypto.createHmac('sha256', process.env.SLACK_SIGNING_SECRET).update(stringToHash).digest('hex');
     return `v0=${hashed}` === signature;
   },
+
+  async retrieveMessages(baseUrl) {
+    let words = []
+    let nextCursor = ''
+    let response;
+    do {
+      let url = baseUrl;
+      if (nextCursor) {
+        url = `${url}&cursor=${nextCursor}`
+      }
+      response = await axios.get(url);
+      if (!response.data.ok) {
+        return false;
+      }
+      words = words.concat(response.data.messages);
+      if (response.data.has_more) {
+        nextCursor = response.data.response_metadata.next_cursor;
+      }
+    } while (response.data.has_more)
+    return words.slice(1);
+  }
 };

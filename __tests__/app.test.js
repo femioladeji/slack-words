@@ -155,4 +155,40 @@ describe('sortScore', () => {
     const diff = app.sortScore(userA, userB);
     expect(diff).toEqual(3);
   });
+
+  describe('retrieveMessages', () => {
+    it.skip("returns returns false if no data", async () => {
+      axios.get = jest.fn().mockResolvedValueOnce({ data: { ok: false } });
+      const words = await app.retrieveMessages('sampleUrl');
+      expect(words).toBe(false);
+    });
+    it.skip("returns all the words if there is no next cursor", async () => {
+      axios.get = jest.fn().mockResolvedValueOnce({ data: {
+        ok: true,
+        messages: ['word0', 'word1', 'word2', 'word3'],
+        has_more: false,
+      } });
+      const words = await app.retrieveMessages('baseUrl');
+      // the first word is chopped off
+      expect(words).toEqual(['word1', 'word2', 'word3']);
+    });
+    it("returns all the words if there is next cursor", async () => {
+      axios.get = jest.fn().mockResolvedValueOnce({ data: {
+        ok: true,
+        messages: ['word0', 'word1', 'word2'],
+        has_more: true,
+        response_metadata: {
+          next_cursor: 'next_cursor'
+        }
+      } }).mockResolvedValueOnce({ data: {
+        ok: true,
+        messages: ['word3', 'word4', 'word5'],
+        has_more: false,
+      } });
+      const words = await app.retrieveMessages('baseUrl');
+      expect(axios.get).toHaveBeenCalledTimes(2);
+      expect(axios.get).toHaveBeenNthCalledWith(2, 'baseUrl&cursor=next_cursor');
+      expect(words).toEqual(['word1', 'word2', 'word3', 'word4', 'word5']);
+    });
+  });
 });

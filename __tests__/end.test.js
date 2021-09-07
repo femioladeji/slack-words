@@ -43,30 +43,24 @@ const authItem = {
 describe('end lambda function', () => {
   it('it works as expected', async () => {
     const callback = jest.fn((error, data) => ({ error, data }));
-    const mockDelete = jest.fn(() => Promise.resolve());
-    const mockQuery = jest.fn(() => Promise.resolve({
-      Items: [authItem],
-    }));
-    const mockAxiosPost = jest.fn(() => Promise.resolve());
-    const mockAxiosGet = jest.fn(() => Promise.resolve({ data: { messages: words } }));
-    const mockResults = jest.fn(() => Promise.resolve(''));
-    db.query = mockQuery;
-    db.delete = mockDelete;
-    app.computeResults = mockResults;
-    axios.post = mockAxiosPost;
-    axios.get = mockAxiosGet;
+    db.query = jest.fn().mockResolvedValue({ Items: [authItem] });
+    db.delete = jest.fn().mockResolvedValue();
+    app.computeResults = jest.fn().mockResolvedValue('block');
+    app.retrieveMessages = jest.fn().mockResolvedValue(words);
+    axios.post = jest.fn().mockResolvedValue();
     await end(event, null, callback);
-    expect(mockQuery).toHaveBeenCalledWith(process.env.SLACK_AUTH_TABLE, teamId);
-    expect(mockAxiosGet).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.access_token}&channel=${channelId}&ts=${thread}`);
-    expect(mockResults).toHaveBeenCalledWith(words.slice(1), letters.toLowerCase().split(' '), authItem.access_token);
-    expect(mockAxiosPost).toHaveBeenNthCalledWith(1, `https://slack.com/api/conversations.join?token=${authItem.access_token}&channel=${channelId}`);
-    expect(mockAxiosPost).toHaveBeenNthCalledWith(2, responseUrl, JSON.stringify({
+    expect(db.query).toHaveBeenCalledWith(process.env.SLACK_AUTH_TABLE, teamId);
+    expect(app.retrieveMessages).toHaveBeenCalledWith(`https://slack.com/api/conversations.replies?token=${authItem.access_token}&channel=${channelId}&ts=${thread}`);
+    expect(app.computeResults).toHaveBeenCalledWith(words, letters.toLowerCase().split(' '), authItem.access_token);
+    expect(axios.post).toHaveBeenCalledTimes(3)
+    expect(axios.post).toHaveBeenNthCalledWith(1, `https://slack.com/api/conversations.join?token=${authItem.access_token}&channel=${channelId}`);
+    expect(axios.post).toHaveBeenNthCalledWith(2, responseUrl, JSON.stringify({
       ...payload,
       response_type: 'in_channel',
     }), option);
-    expect(mockAxiosPost).toHaveBeenNthCalledWith(3, responseUrl, JSON.stringify({
+    expect(axios.post).toHaveBeenNthCalledWith(3, responseUrl, JSON.stringify({
       response_type: 'in_channel',
-      blocks: '',
+      blocks: 'block',
     }), option);
     expect(callback.mock.calls.length).toBe(1);
   });
