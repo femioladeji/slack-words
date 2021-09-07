@@ -8,10 +8,10 @@ const db = require('../utils/db');
 const app = require('../utils/app');
 const helpers = require('./helpers');
 
-const teamId = faker.random.uuid();
-const channelId = faker.random.uuid();
+const teamId = faker.datatype.uuid();
+const channelId = faker.datatype.uuid();
 const gameLetters = 'A B C D E';
-const ts = faker.random.uuid();
+const ts = faker.datatype.uuid();
 const body = qs.stringify({
   team_id: teamId,
   channel_id: channelId,
@@ -28,7 +28,7 @@ const startEvent = {
 
 const authItem = {
   id: teamId,
-  access_token: faker.random.uuid(),
+  access_token: faker.datatype.uuid(),
 };
 
 it('it returns game already in progress if there\'s an ongoing game', async () => {

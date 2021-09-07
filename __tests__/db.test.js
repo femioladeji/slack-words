@@ -9,8 +9,8 @@ const dataItem = {
   user: faker.internet.userName(),
   word,
 };
-const id = faker.random.uuid();
-const thread = faker.random.uuid();
+const id = faker.datatype.uuid();
+const thread = faker.datatype.uuid();
 
 describe('insert', () => {
   it('resolves to the data sent', async () => {

@@ -6,13 +6,13 @@ const db = require('../utils/db');
 const app = require('../utils/app');
 
 const words = faker.lorem.sentence().split(' ');
-const id = faker.random.uuid();
+const id = faker.datatype.uuid();
 const responseUrl = faker.internet.url();
 const letters = 'A B C D';
-const teamId = faker.random.uuid();
-const channelId = faker.random.uuid();
-const accessToken = faker.random.uuid();
-const thread = faker.random.uuid();
+const teamId = faker.datatype.uuid();
+const channelId = faker.datatype.uuid();
+const accessToken = faker.datatype.uuid();
+const thread = faker.datatype.uuid();
 const payload = {
   text: 'Game has ended. Computing results...',
 };

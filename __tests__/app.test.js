@@ -114,7 +114,7 @@ describe('computeResults', () => {
     type: 'invalid',
   }];
   const alphabetLetters = 'O M N M U M M L E J D T O X B'.toLowerCase().split(' ');
-  const token = faker.random.uuid();
+  const token = faker.datatype.uuid();
   it('calculates the right result', async () => {
     const mockAxiosGet = jest.fn(url => Promise.resolve({
       status: url.includes('lej') ? 404 : 200,
@@ -157,12 +157,12 @@ describe('sortScore', () => {
   });
 
   describe('retrieveMessages', () => {
-    it.skip("returns returns false if no data", async () => {
+    it("returns returns false if no data", async () => {
       axios.get = jest.fn().mockResolvedValueOnce({ data: { ok: false } });
       const words = await app.retrieveMessages('sampleUrl');
       expect(words).toBe(false);
     });
-    it.skip("returns all the words if there is no next cursor", async () => {
+    it("returns all the words if there is no next cursor", async () => {
       axios.get = jest.fn().mockResolvedValueOnce({ data: {
         ok: true,
         messages: ['word0', 'word1', 'word2', 'word3'],
