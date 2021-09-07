@@ -180,13 +180,13 @@ module.exports = {
   },
 
   async retrieveMessages(baseUrl) {
-    let words = []
-    let nextCursor = ''
+    let words = [];
+    let nextCursor = '';
     let response;
     do {
       let url = baseUrl;
       if (nextCursor) {
-        url = `${url}&cursor=${nextCursor}`
+        url = `${url}&cursor=${nextCursor}`;
       }
       response = await axios.get(url);
       if (!response.data.ok) {
@@ -196,7 +196,7 @@ module.exports = {
       if (response.data.has_more) {
         nextCursor = response.data.response_metadata.next_cursor;
       }
-    } while (response.data.has_more)
+    } while (response.data.has_more);
     return words.slice(1);
-  }
+  },
 };
