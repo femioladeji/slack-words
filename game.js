@@ -93,8 +93,13 @@ module.exports.end = async (eventMessage, context, callback) => {
     const { access_token: accessToken } = authItem[0];
     await db.delete(process.env.DYNAMO_TABLE_NAME, id);
     await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${channelId}`);
-    const allMessages = await axios.get(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
-    const words = allMessages.data.messages.slice(1);
+    const words = await app.retrieveMessages(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
+    if (!words) {
+      return axios.post(responseUrl, JSON.stringify({
+        text: 'An error occurred, can you please uninstall and re-install the game',
+        response_type: 'in_channel',
+      }));
+    }
     sendEndMessage(responseUrl, accessToken, words.length);
 
     if (words.length) {
@@ -114,7 +119,7 @@ module.exports.end = async (eventMessage, context, callback) => {
   } catch (error) {
     console.log(error);
     await axios.post(responseUrl, JSON.stringify({
-      text: 'An error ocurred while ending the game',
+      text: 'An error occurred while ending the game',
       response_type: 'in_channel',
     }));
     callback(null, {

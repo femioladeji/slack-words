@@ -1,6 +1,6 @@
 {
     "name": "slackwords",
-    "version": "1.0.0",
+    "version": "2.0.1",
     "author": "Femi Oladeji",
     "description": "A slack game that allows you to form english words from random letters",
     "scripts": {
@@ -19,7 +19,7 @@
         "eslint": "^5.16.0",
         "eslint-config-airbnb-base": "^13.2.0",
         "eslint-plugin-import": "^2.18.2",
-        "faker": "^4.1.0",
+        "faker": "^5.5.3",
         "jest": "^24.9.0",
         "serverless": "^1.48.4",
         "serverless-dotenv-plugin": "^2.1.1",

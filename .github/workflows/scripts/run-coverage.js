@@ -26,7 +26,7 @@ const main = async () => {
 </p>
 </details>`;
 
-  await octokit.issues.createComment({
+  await octokit.rest.issues.createComment({
     repo: repoName,
     owner: repoOwner,
     body: commentBody,
