@@ -62,7 +62,7 @@ it('it starts a new game if there\'s no ongoing game', async () => {
       ts,
     },
   }));
-  const text = `Game started, type as many english words in the thread within 60 seconds using \`${gameLetters}\``;
+  const text = `Game started, type as many English words in the thread within 60 seconds using \`${gameLetters}\``;
   axios.post = mockAxiosPost;
   aws.SQS = jest.fn().mockImplementation(() => ({ sendMessage: mockSendMessage }));
   db.query = jest.fn((table) => {

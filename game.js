@@ -59,7 +59,7 @@ module.exports.start = async (event, _context, callback) => {
     }
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
     const { access_token: accessToken } = authItem[0];
-    const text = `Game started, type as many english words in the thread within 60 seconds using \`${gameItem.letters}\``;
+    const text = `Game started, type as many English words in the thread within 60 seconds using \`${gameItem.letters}\``;
     await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
     const message = await axios.post(`https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${gameItem.channel_id}&text=${text}`);
     gameItem.thread = message.data.ts;
