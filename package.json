@@ -2,7 +2,7 @@
     "name": "slackwords",
     "version": "2.0.1",
     "author": "Femi Oladeji",
-    "description": "A slack game that allows you to form english words from random letters",
+    "description": "A slack game that allows you to form English words from random letters",
     "scripts": {
         "production": "serverless deploy --stage prod",
         "test": "jest && codecov",
