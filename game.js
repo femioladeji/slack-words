@@ -70,8 +70,9 @@ module.exports.start = async (event, _context, callback) => {
     }).promise();
     return respond(callback, 200);
   } catch (error) {
-    return respond(callback, 200, JSON.stringify({
-      text: 'Game was not started, a new version was recently released. Please reinstall the game',
+    console.log(error);
+    return respond(callback, 500, JSON.stringify({
+      text: 'An error occurred while starting the game. Please send a mail to femidotexe@gmail.com if this error persists',
       response_type: 'ephemeral',
     }));
   }
