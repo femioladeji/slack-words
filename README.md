@@ -1,6 +1,3 @@
-[![CircleCI](https://circleci.com/gh/femioladeji/slack-words.svg?style=svg)](https://circleci.com/gh/femioladeji/slack-words)
-[![codecov](https://codecov.io/gh/femioladeji/slack-words/branch/master/graph/badge.svg)](https://codecov.io/gh/femioladeji/slack-words)
-
 # Slackwords
 A slack game to test your mastery of English and how good you are at forming words from random letters
 
