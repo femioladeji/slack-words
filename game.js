@@ -58,6 +58,7 @@ module.exports.start = async (event, _context, callback) => {
       }));
     }
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
+    console.log(JSON.stringify(authItem, null, 2));
     const { access_token: accessToken } = authItem[0];
     const text = `Game started, type as many English words in the thread within 60 seconds using \`${gameItem.letters}\``;
     await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
@@ -70,8 +71,9 @@ module.exports.start = async (event, _context, callback) => {
     }).promise();
     return respond(callback, 200);
   } catch (error) {
-    return respond(callback, 200, JSON.stringify({
-      text: 'Game was not started, a new version was recently released. Please reinstall the game',
+    console.log(error);
+    return respond(callback, 500, JSON.stringify({
+      text: 'An error occurred while starting the game. Please send a mail to femidotexe@gmail.com if this error persists',
       response_type: 'ephemeral',
     }));
   }

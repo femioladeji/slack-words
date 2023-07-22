@@ -5,7 +5,7 @@
     "description": "A slack game that allows you to form English words from random letters",
     "scripts": {
         "production": "serverless deploy --stage prod",
-        "test": "jest && codecov",
+        "test": "jest",
         "dev": "serverless offline start"
     },
     "dependencies": {
@@ -15,15 +15,14 @@
         "qs": "^6.7.0"
     },
     "devDependencies": {
-        "codecov": "^3.7.1",
         "eslint": "^5.16.0",
         "eslint-config-airbnb-base": "^13.2.0",
         "eslint-plugin-import": "^2.18.2",
         "faker": "^5.5.3",
-        "jest": "^24.9.0",
-        "serverless": "^1.48.4",
+        "jest": "^29.6.1",
+        "serverless": "^3.33.0",
         "serverless-dotenv-plugin": "^2.1.1",
         "serverless-dynamodb-local": "^0.2.38",
-        "serverless-offline": "^6.0.0-alpha.39"
+        "serverless-offline": "^12.0.4"
     }
 }
