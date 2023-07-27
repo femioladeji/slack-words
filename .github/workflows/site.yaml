@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: [Unit testing]
     types: [completed]
-    branches: [main]
+    branches: [master]
 env:
   CI: false
 
