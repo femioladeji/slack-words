@@ -16,7 +16,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' # install the python version needed
+          python-version: '2' # install the python version needed
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
