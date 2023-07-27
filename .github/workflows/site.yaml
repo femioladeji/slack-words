@@ -6,7 +6,7 @@ on:
     types: [completed]
     branches: [main]
 env:
-  CI: true
+  CI: false
 
 jobs:
   build:
@@ -23,11 +23,3 @@ jobs:
         run: cd site && yarn && yarn build
       - name: Deploy to S3 bucket
         run: aws s3 sync ./site s3://wordsgame-site --delete --exclude "./site/node_modules"
-      # - name: invalidate Cloudfront configuration
-      #   uses: chetan/invalidate-cloudfront-action@v2
-      #   env:
-      #     DISTRIBUTION: ${{ secrets.LEADGEN_PRODUCTION_DISTRIBUTION }}
-      #     PATHS: "/"
-      #     AWS_REGION: "us-east-1"
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
