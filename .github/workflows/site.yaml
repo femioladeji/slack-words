@@ -30,4 +30,4 @@ jobs:
       - name: Build site
         run: cd site && yarn && yarn build
       - name: Deploy to S3 bucket
-        run: aws s3 sync ./site s3://wordsgame-site --delete --exclude "./site/node_modules/*"
+        run: aws s3 sync ./site s3://wordsgame-site --delete --exclude "./site/node_modules/*" --exclude "./site/yarn.lock"
