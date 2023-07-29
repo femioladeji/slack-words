@@ -92,10 +92,17 @@
         <h3>2. Security</h3>
         <p>The information is saved in a secure database</p>
 
-        <h3>3. Third party</h3>
+        <h3>3. Data retention</h3>
+        <p>All the data pertaining to each game instance (channel name, channel id, start message id) is only saved for
+          one minute (duration of the game).
+          The data pertaining to authentication (team id, team access token, user who authenticated the installation and
+          team name) is saved for as long as your team is authenticated to use the slack app
+        </p>
+
+        <h3>4. Third party</h3>
         <p>Each word submitted is sent to a third party API to confirm if it's an accurate English word</p>
 
-        <h3>4. Request to delete or transfer data</h3>
+        <h3>5. Request to delete or transfer data</h3>
         <p>If you want your records to be deleted, you can send a mail to <a
             href="mailto:femidotexe@gmail.com">femidotexe@gmail.com. Please include your slack team name or team ID</a>
         </p>
@@ -139,9 +146,9 @@
   <footer class="bg-light py-5">
     <div class="container">
       <div class="small text-center text-muted">Copyright &copy; 2019</div>
-        &nbsp;&nbsp;&nbsp;<a href="privacy.html">Privacy Policy</a>
-        &nbsp;&nbsp;&nbsp;<a href="terms.html">Terms of service</a>
-      </div>
+      &nbsp;&nbsp;&nbsp;<a href="privacy.html">Privacy Policy</a>
+      &nbsp;&nbsp;&nbsp;<a href="terms.html">Terms of service</a>
+    </div>
   </footer>
 
   <!-- Bootstrap core JavaScript -->
