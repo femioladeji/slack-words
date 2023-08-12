@@ -1,8 +1,8 @@
-# Slackwords
+# Wordsgame
 A slack game to test your mastery of English and how good you are at forming words from random letters
 
 ## NOTE
-[http://slackwords.com](http://slackwords.com)
+[http://wordsgameforslack.com](http://wordsgameforslack.com)
 
 ## TECHNOLOGY
 - AWS Lambda function
