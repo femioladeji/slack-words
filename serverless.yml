@@ -50,7 +50,7 @@ resources:
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   region: us-west-2
   versionFunctions: false
   iamRoleStatements: # permissions for all of your functions can be set here

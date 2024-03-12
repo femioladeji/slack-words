@@ -59,6 +59,7 @@ it('it starts a new game if there\'s no ongoing game', async () => {
   const mockAxiosPost = jest.fn(() => Promise.resolve({
     status: 200,
     data: {
+      ok: true,
       ts,
     },
   }));
