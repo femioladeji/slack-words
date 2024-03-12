@@ -58,10 +58,15 @@ module.exports.start = async (event, _context, callback) => {
       }));
     }
     const { Items: authItem } = await db.query(process.env.SLACK_AUTH_TABLE, gameItem.team_id);
-    console.log(JSON.stringify(authItem, null, 2));
     const { access_token: accessToken } = authItem[0];
     const text = `Game started, type as many English words in the thread within 60 seconds using \`${gameItem.letters}\``;
-    await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
+    const channelJoinResponse = await axios.post(`https://slack.com/api/conversations.join?token=${accessToken}&channel=${gameItem.channel_id}`);
+    if (!channelJoinResponse.data.ok) {
+      return respond(callback, 200, JSON.stringify({
+        text: 'You can only play slackwords in a public channel. Please try playing it in a public channel',
+        response_type: 'ephemeral',
+      }));
+    }
     const message = await axios.post(`https://slack.com/api/chat.postMessage?token=${accessToken}&channel=${gameItem.channel_id}&text=${text}`);
     gameItem.thread = message.data.ts;
     await db.insert(process.env.DYNAMO_TABLE_NAME, gameItem);
@@ -98,7 +103,7 @@ module.exports.end = async (eventMessage, context, callback) => {
     const words = await app.retrieveMessages(`https://slack.com/api/conversations.replies?token=${accessToken}&channel=${channelId}&ts=${thread}`);
     if (!words) {
       return axios.post(responseUrl, JSON.stringify({
-        text: 'An error occurred, can you please uninstall and re-install the game',
+        text: 'An error occurred, can you please uninstall and re-install the game. If the error persists, please send a mail to femidotexe@gmail.com',
         response_type: 'in_channel',
       }));
     }
@@ -121,7 +126,7 @@ module.exports.end = async (eventMessage, context, callback) => {
   } catch (error) {
     console.log(error);
     await axios.post(responseUrl, JSON.stringify({
-      text: 'An error occurred while ending the game',
+      text: 'An error occurred while ending the game. Please send a mail to femidotexe@gmail.com if this error persists',
       response_type: 'in_channel',
     }));
     callback(null, {
