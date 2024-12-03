@@ -1,5 +1,6 @@
 const axios = require('axios');
 const crypto = require('crypto');
+const dictionary = require('./dictionary');
 
 const vowels = ['a', 'e', 'i', 'o', 'u'];
 // eslint-disable-next-line max-len
@@ -59,6 +60,14 @@ module.exports = {
     return users;
   },
 
+  checkLocalDictionary(word) {
+    const firstLetter = word[0].toLowerCase();
+    if (dictionary[firstLetter].includes(word)) {
+      return true;
+    }
+    return false;
+  },
+
   computeResults(entries, alphabets, token) {
     return new Promise(async (resolve, reject) => {
       const foundWords = [];
@@ -82,6 +91,11 @@ module.exports = {
           });
         }
         foundWords.push(text);
+        if (this.checkLocalDictionary(text)) {
+          return Promise.resolve({
+            status: 200,
+          });
+        }
         const url = `https://wordsapiv1.p.rapidapi.com/words/${text}/definitions`;
         return axios.get(url, {
           headers: {
