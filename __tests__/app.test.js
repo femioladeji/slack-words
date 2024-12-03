@@ -126,7 +126,7 @@ describe('computeResults', () => {
     const mockGetUsers = jest.fn(() => Promise.resolve([]));
     app.getUsers = mockGetUsers;
     await app.computeResults(entries, alphabetLetters, token);
-    expect(mockAxiosGet).toHaveBeenCalledTimes(6);
+    expect(mockAxiosGet).toHaveBeenCalledTimes(1);
     expect(mockGetUsers).toHaveBeenCalledWith({
       user1: {
         totalScore: 8,
